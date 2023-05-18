@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <Windows.h>
+#include <WinUser.h>
 
 // Need to define UNICODE to avoid LPCSTR being used instead of wchat_t
 #ifndef UNICODE
@@ -88,6 +89,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
             EndPaint(hdc, &ps);
             return 0;
+
+        // Fix the mouse cursor not changing when hovered over the window
+        // ex. stuck on resize horizontal cursor after moving into the window from the right
+        //TODO: make sure this is the efficient way to do this (mousehover doesn't work)
+        case WM_MOUSEMOVE:
+            HCURSOR defaultCur = LoadCursor(NULL, IDC_ARROW);
+            SetCursor(defaultCur);
+            return 0;
+
     }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
