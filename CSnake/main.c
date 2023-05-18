@@ -1,15 +1,8 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <WinUser.h>
-
-// Need to define UNICODE to avoid LPCSTR being used instead of wchat_t
-#ifndef UNICODE
-#define UNICODE
-#endif 
-
-// Initializes the window procedure signature
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-void OnResize(HWND hwnd, UINT flag, int width, int height);
+#include "main.h"
+#include "menu_items.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
     /*
@@ -35,6 +28,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     create the window
     */
 
+    // Creates the top menubar
+    HMENU menubar = CreateMenu();
+
+    InsertMenuItem(menubar, 0, TRUE, &fileMenu);
+
     HWND hwnd = CreateWindowEx(
         0,                      // Optional window styles, ex. transparent window
         CLASS_NAME,             // Window class, uses the name to access which was previously registered
@@ -45,7 +43,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
         CW_USEDEFAULT, CW_USEDEFAULT, 640, 480,
 
         NULL,           // Parent window, for subwindows within the main window
-        NULL,           // Menu
+        menubar,        // Menu
         hInstance,      // Intance handle
         NULL            // Additional application data
     );
