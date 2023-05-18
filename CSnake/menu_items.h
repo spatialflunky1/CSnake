@@ -5,5 +5,6 @@
 
 // get menus from menu_items.c
 extern MENUITEMINFO fileMenu;
+extern MENUITEMINFO editMenu;
 
 #endif

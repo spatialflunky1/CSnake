@@ -32,6 +32,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     HMENU menubar = CreateMenu();
 
     InsertMenuItem(menubar, 0, TRUE, &fileMenu);
+    InsertMenuItem(menubar, 1, TRUE, &editMenu);
 
     HWND hwnd = CreateWindowEx(
         0,                      // Optional window styles, ex. transparent window
