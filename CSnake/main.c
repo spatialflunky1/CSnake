@@ -8,6 +8,7 @@
 
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void OnResize(HWND hwnd, UINT flag, int width, int height);
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
     /*
@@ -17,7 +18,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     // wchar_t is used instead of char as the Windows API requires it
     // wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
     const wchar_t CLASS_NAME[] = L"Main Window Class";
-    WNDCLASSW wc;
+    WNDCLASS wc = { 0 };
 
     // lpfnWndProc is a pointer to the window procedure function, defines ("most of") the behavior of the window
     wc.lpfnWndProc = WindowProc;
@@ -27,20 +28,20 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     wc.lpszClassName = CLASS_NAME;
 
     // Registers the window class with the operating system
-    RegisterClassW(&wc);
+    RegisterClass(&wc);
 
     /*
     create the window
     */
 
-    HWND hwnd = CreateWindowExW(
+    HWND hwnd = CreateWindowEx(
         0,                      // Optional window styles, ex. transparent window
         CLASS_NAME,             // Window class, uses the name to access which was previously registered
         L"CSnake",              // Window text
         WS_OVERLAPPEDWINDOW,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
 
-        // Size and Position
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        // Size and Position (xPos, yPos, width, height)
+        CW_USEDEFAULT, CW_USEDEFAULT, 640, 480,
 
         NULL,           // Parent window, for subwindows within the main window
         NULL,           // Menu
@@ -55,12 +56,43 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     /*
     loop the program
     */
+
+    MSG msg = { 0 };
+    while (GetMessage(&msg, NULL, 0, 0) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessageW(&msg);
+    }
+
     return 0;
 }
 
+// WindowProc(windowHandle, message, additionalParameter, additionalParameter)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
-    case WM_SIZE:
+        // Stops the process when the window is closed
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
 
+        // Runs on window resize
+        case WM_SIZE:
+            int width = LOWORD(lParam);  // Macro to get the low-order word.
+            int height = HIWORD(lParam); // Macro to get the high-order word.
+            OnResize(hwnd, (UINT)wParam, width, height);
+            return 0;
+
+        // Fills ("paints") the window
+        case WM_PAINT:
+            PAINTSTRUCT ps;
+            HDC hdc = BeginPaint(hwnd, &ps);
+            FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+            EndPaint(hdc, &ps);
+            return 0;
     }
+    // Does the default action for the message if undefined in the switch
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void OnResize(HWND hwnd, UINT flag, int width, int height) {
+    
 }
