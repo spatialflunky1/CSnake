@@ -2,7 +2,6 @@
 #include <Windows.h>
 #include <WinUser.h>
 #include "main.h"
-#include "menu_items.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
     /*
@@ -30,9 +29,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
 
     // Creates the top menubar
     HMENU menubar = CreateMenu();
+    HMENU fileMenu = CreateMenu();
+    HMENU editMenu = CreateMenu();
 
-    InsertMenuItem(menubar, 0, TRUE, &fileMenu);
-    InsertMenuItem(menubar, 1, TRUE, &editMenu);
+    //AppendMenu(fileMenu, );
+    AppendMenu(menubar, MF_POPUP, (UINT_PTR)fileMenu, L"&File");
+    AppendMenu(menubar, MF_POPUP, (UINT_PTR)editMenu, L"&Edit");
 
     HWND hwnd = CreateWindowEx(
         0,                      // Optional window styles, ex. transparent window
