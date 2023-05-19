@@ -19,10 +19,6 @@ MENUITEMINFO fileMenu = {
     NULL                    // handle to the bitmap                             only retrieved if MIIM_BITMAP
 };
 
-/*
-File menu submenus
-*/
-
 MENUITEMINFO editMenu = {
     sizeof(MENUITEMINFO),   // size of the structure (in bytes)                 Required flag
     MIIM_TYPE,              // indicates the member to be retrieved or set      ---------------------------------------
@@ -37,3 +33,7 @@ MENUITEMINFO editMenu = {
     4,                      // length of the menu item text                     only retrieved if MIIM_TYPE & MFT_STRING is set
     NULL                    // handle to the bitmap                             only retrieved if MIIM_BITMAP
 };
+
+/*
+File menu submenus
+*/
