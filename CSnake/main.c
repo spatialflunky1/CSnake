@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <WinUser.h>
+#include <wingdi.h>
 #include "main.h"
+
+// global variables
+int width = 640;
+int height = 480;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
     /*
@@ -27,14 +32,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     create the window
     */
 
-    // Creates the top menubar
+    // Creates the menubar
     HMENU menubar = CreateMenu();
     HMENU fileMenu = CreateMenu();
     HMENU editMenu = CreateMenu();
+    HMENU helpMenu = CreateMenu();
 
-    //AppendMenu(fileMenu, );
     AppendMenu(menubar, MF_POPUP, (UINT_PTR)fileMenu, L"&File");
+    AppendMenu(fileMenu, MF_STRING, ID_QUIT, L"&Quit");
+
     AppendMenu(menubar, MF_POPUP, (UINT_PTR)editMenu, L"&Edit");
+    AppendMenu(editMenu, MF_STRING, ID_SETTINGS, L"&Settings");
+
+    AppendMenu(menubar, MF_POPUP, (UINT_PTR)helpMenu, L"&Help");
+    AppendMenu(helpMenu, MF_STRING, ID_ABOUT, L"&About");
+
 
     HWND hwnd = CreateWindowEx(
         0,                      // Optional window styles, ex. transparent window
@@ -43,7 +55,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
         WS_OVERLAPPEDWINDOW,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
 
         // Size and Position (xPos, yPos, width, height)
-        CW_USEDEFAULT, CW_USEDEFAULT, 640, 480,
+        CW_USEDEFAULT, CW_USEDEFAULT, width, height,
 
         NULL,           // Parent window, for subwindows within the main window
         menubar,        // Menu
@@ -78,9 +90,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         // Runs on window resize
         case WM_SIZE:
-            int width = LOWORD(lParam);  // Macro to get the low-order word.
-            int height = HIWORD(lParam); // Macro to get the high-order word.
-            OnResize(hwnd, (UINT)wParam, width, height);
+            // low-order word: width
+            // high-order word: height
+            OnResize(hwnd, (UINT)wParam, LOWORD(lParam), HIWORD(lParam));
             return 0;
 
         // Fills ("paints") the window
@@ -88,6 +100,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+            // Title text
+            char* temp;
+            _itoa_s(width, temp, 4, 10);
+            TextOut(hdc, width / 2, 50, temp, 6);
+            free(temp);
+
             EndPaint(hdc, &ps);
             return 0;
 
@@ -99,11 +117,36 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             SetCursor(defaultCur);
             return 0;
 
+        // Recieves the input for buttons being pressed
+        case WM_COMMAND:
+            int wmId = LOWORD(wParam);
+            switch (wmId) {
+                case ID_QUIT:
+                    PostQuitMessage(0);
+                    return 0;
+
+                case ID_ABOUT:
+                    MessageBox(hwnd, L"CSnake 2023 AP CSA Final Project", L"About CSnake", MB_OK | MB_ICONINFORMATION);
+                    return 0;
+            }
+            return 0;
+
     }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-void OnResize(HWND hwnd, UINT flag, int width, int height) {
-    
+void OnResize(HWND hwnd, UINT flag, int w, int h) {
+    width = w;
+    height = h;
+}
+
+// it may LOOK unefficient but its the fastest method in C with the only use case of display resolutions
+int numDigits(int n) {
+    if (n < 10) return 1;
+    if (n < 100) return 2;
+    if (n < 1000) return 3;
+    if (n < 10000) return 4;
+    if (n < 100000) return 5;
+    return -1;
 }

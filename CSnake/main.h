@@ -8,6 +8,10 @@
 #define UNICODE
 #endif 
 
+#define ID_QUIT 100
+#define ID_ABOUT 101
+#define ID_SETTINGS 102
+
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void OnResize(HWND hwnd, UINT flag, int width, int height);
