@@ -101,8 +101,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
             // Title text
-            char* temp;
-            _itoa_s(width, temp, 4, 10);
+            int len = 3;
+            char* temp = (char*)malloc((len+5) * sizeof(char));
+            sprintf_s(temp, sizeof(temp), "%d", width);
             TextOut(hdc, width / 2, 50, temp, 6);
             free(temp);
 
