@@ -52,7 +52,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
         0,                      // Optional window styles, ex. transparent window
         CLASS_NAME,             // Window class, uses the name to access which was previously registered
         L"CSnake",              // Window text
-        WS_OVERLAPPEDWINDOW,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
 
         // Size and Position (xPos, yPos, width, height)
         CW_USEDEFAULT, CW_USEDEFAULT, width, height,
@@ -74,7 +74,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     MSG msg = { 0 };
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
-        DispatchMessageW(&msg);
+        DispatchMessage(&msg);
     }
 
     return 0;
@@ -100,12 +100,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
-            // Title text
-            int len = 3;
-            char* temp = (char*)malloc((len+5) * sizeof(char));
-            sprintf_s(temp, sizeof(temp), "%d", width);
-            TextOut(hdc, width / 2, 50, temp, 6);
-            free(temp);
+            // Title 
+            printNum(hdc, width / 2, 50, 10);
 
             EndPaint(hdc, &ps);
             return 0;
@@ -135,6 +131,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void printNum(HDC hdc, int x, int y, int num) {
+    int len = numDigits(num);
+    char* temp = (char*)malloc(sizeof(char) * (int)log10(num));
+    sprintf_s(temp, sizeof(temp), "%d", num);
+
+    TextOut(hdc, x, y, temp, len);
+
+    free(temp);
 }
 
 void OnResize(HWND hwnd, UINT flag, int w, int h) {

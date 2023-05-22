@@ -15,5 +15,6 @@
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void OnResize(HWND hwnd, UINT flag, int width, int height);
+void printNum(int x, int y, int num);
 
 #endif
