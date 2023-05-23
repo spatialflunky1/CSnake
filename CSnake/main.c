@@ -71,9 +71,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     loop the program
     */
 
-    DWORD dwGenericThread;
-    HANDLE gameThread = CreateThread(NULL, 0, gameLoop, NULL, 0, &dwGenericThread);
-    WaitForSingleObject(gameThread, INFINITE);
+    DWORD threadID = 0;
+    HANDLE gameThread = CreateThread(NULL, 0, gameLoop, hwnd, 0, &threadID);
 
     MSG msg = { 0 };
     int temp = 0;
@@ -85,11 +84,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     return 0;
 }
 
-void gameLoop() {
-    HWND hwnd = GetActiveWindow();
+DWORD WINAPI gameLoop(HWND hwnd) {
+    HDC hdc = GetDC(hwnd);
     while (TRUE) {
-        WindowProc(hwnd, GAME_UPDATE_SCORE, NULL, NULL);
+        score++;
+        paintScore(hdc, hwnd, score);
     }
+    ReleaseDC(hwnd, hdc);
 }
 
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
@@ -130,11 +131,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     MessageBox(hwnd, L"CSnake 2023 AP CSA Final Project", L"About CSnake", MB_OK | MB_ICONINFORMATION);
                     return 0;
             }
-            return 0;
-
-        case GAME_UPDATE_SCORE:
-            score++;
-            //HDC hdc = 
             return 0;
 
     }
