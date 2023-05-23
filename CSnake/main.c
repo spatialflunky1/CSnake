@@ -71,13 +71,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     loop the program
     */
 
+    DWORD dwGenericThread;
+    HANDLE gameThread = CreateThread(NULL, 0, gameLoop, NULL, 0, &dwGenericThread);
+    WaitForSingleObject(gameThread, INFINITE);
+
     MSG msg = { 0 };
+    int temp = 0;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
     return 0;
+}
+
+void gameLoop() {
+    HWND hwnd = GetActiveWindow();
+    while (TRUE) {
+        WindowProc(hwnd, GAME_UPDATE_SCORE, NULL, NULL);
+    }
 }
 
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
@@ -120,16 +132,19 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             return 0;
 
+        case GAME_UPDATE_SCORE:
+            score++;
+            //HDC hdc = 
+            return 0;
+
     }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 // Paints the score after the score text
-void paintScore(HWND hwnd, int score) {
-    HDC hdc = GetDC(hwnd);
-    printNum(hdc, WIDTH, 50, score);
-    ReleaseDC(hwnd, hdc);
+void paintScore(HDC hdc, HWND hwnd, int score) {
+    printNum(hdc, 53, 5, score);
 }
 
 void printNum(HDC hdc, int x, int y, int num) {
