@@ -129,7 +129,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 // Paints the score after the score text
 void paintScore(HWND hwnd, int score) {
     HDC hdc = GetDC(hwnd);
-    // Score (-28 for 4 7-pixel wide chars)
     printNum(hdc, WIDTH, 50, score);
     ReleaseDC(hwnd, hdc);
 }
