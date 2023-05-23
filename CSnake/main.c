@@ -148,7 +148,6 @@ void printNum(HDC hdc, int x, int y, int num) {
 
 void printString(HDC hdc, int x, int y, wchar_t string[]) {
     int len = wcslen(string);
-    // Default win32 font is 7 pixels wide
     TextOut(hdc, x, y, string, len);
 }
 
