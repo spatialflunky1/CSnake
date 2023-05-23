@@ -6,8 +6,6 @@
 #include "main.h"
 
 // global variables
-int width = 640;
-int height = 480;
 int score = 0;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
@@ -57,7 +55,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
 
         // Size and Position (xPos, yPos, width, height)
-        CW_USEDEFAULT, CW_USEDEFAULT, width, height,
+        CW_USEDEFAULT, CW_USEDEFAULT, WIDTH, HEIGHT,
 
         NULL,           // Parent window, for subwindows within the main window
         menubar,        // Menu
@@ -96,8 +94,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             // Score (-28 for 4 7-pixel wide chars)
-            printString(hdc, width - 28, 10, L"Score:");
-            printNum(hdc, width-14, 10, score);
+            printString(hdc, 0, 10, L"Score:");
+            printNum(hdc, 48, 10, score);
             EndPaint(hdc, &ps);
             return 0;
 
@@ -132,7 +130,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 void paintScore(HWND hwnd, int score) {
     HDC hdc = GetDC(hwnd);
     // Score (-28 for 4 7-pixel wide chars)
-    printNum(hdc, width, 50, score);
+    printNum(hdc, WIDTH, 50, score);
     ReleaseDC(hwnd, hdc);
 }
 
@@ -143,7 +141,7 @@ void printNum(HDC hdc, int x, int y, int num) {
     // Copy int `num` into wide character array buffer `temp`
     swprintf_s(temp, sizeof(temp), L"%d", num);
     // Print text to window
-    TextOut(hdc, x-(len*8), y, temp, len);
+    TextOut(hdc, x, y, temp, len);
     // Free the memory location of the wide character array
     free(temp);
 }
@@ -151,7 +149,7 @@ void printNum(HDC hdc, int x, int y, int num) {
 void printString(HDC hdc, int x, int y, wchar_t string[]) {
     int len = wcslen(string);
     // Default win32 font is 7 pixels wide
-    TextOut(hdc, x-(len*7), y, string, len);
+    TextOut(hdc, x, y, string, len);
 }
 
 // it may LOOK unefficient but its the fastest method in C with the only use case of display resolutions
