@@ -8,7 +8,7 @@
 // global variables
 int width = 640;
 int height = 480;
-int num = 0;
+int score = 0;
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
     /*
@@ -54,8 +54,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
         0,                      // Optional window styles, ex. transparent window
         CLASS_NAME,             // Window class, uses the name to access which was previously registered
         L"CSnake",              // Window text
-        //WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
-        WS_OVERLAPPEDWINDOW,
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,    // Window style, multiple flags in one, creates the title bar, min/max buttons, etc.
 
         // Size and Position (xPos, yPos, width, height)
         CW_USEDEFAULT, CW_USEDEFAULT, width, height,
@@ -91,27 +90,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             PostQuitMessage(0);
             return 0;
 
-        // Runs on window resize
-        case WM_SIZE:
-            // low-order word: width
-            // high-order word: height
-            OnResize(hwnd, (UINT)wParam, LOWORD(lParam), HIWORD(lParam));
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-            // Score (-28 for 4 7-pixel wide chars)
-            printNum(hdc, width, 10, width);
-
-            EndPaint(hdc, &ps);
-            return 0;
-
         // Fills ("paints") the window
         case WM_PAINT:
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
-            FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_WINDOW+1));
+            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             // Score (-28 for 4 7-pixel wide chars)
-            printString(hdc, width-28, 10, L"Score:");
-
+            printString(hdc, width - 28, 10, L"Score:");
+            printNum(hdc, width-14, 10, score);
             EndPaint(hdc, &ps);
             return 0;
 
@@ -142,6 +128,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+// Paints the score after the score text
+void paintScore(HWND hwnd, int score) {
+    HDC hdc = GetDC(hwnd);
+    // Score (-28 for 4 7-pixel wide chars)
+    printNum(hdc, width, 50, score);
+    ReleaseDC(hwnd, hdc);
+}
+
 void printNum(HDC hdc, int x, int y, int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`
@@ -149,7 +143,7 @@ void printNum(HDC hdc, int x, int y, int num) {
     // Copy int `num` into wide character array buffer `temp`
     swprintf_s(temp, sizeof(temp), L"%d", num);
     // Print text to window
-    TextOut(hdc, x, y, temp, len);
+    TextOut(hdc, x-(len*8), y, temp, len);
     // Free the memory location of the wide character array
     free(temp);
 }
@@ -158,11 +152,6 @@ void printString(HDC hdc, int x, int y, wchar_t string[]) {
     int len = wcslen(string);
     // Default win32 font is 7 pixels wide
     TextOut(hdc, x-(len*7), y, string, len);
-}
-
-void OnResize(HWND hwnd, UINT flag, int w, int h) {
-    width = w;
-    height = h;
 }
 
 // it may LOOK unefficient but its the fastest method in C with the only use case of display resolutions
