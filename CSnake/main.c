@@ -93,7 +93,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-            // Score (-28 for 4 7-pixel wide chars)
             printString(hdc, 5, 5, L"Score:");
             printNum(hdc, 53, 5, score);
             EndPaint(hdc, &ps);
