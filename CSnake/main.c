@@ -8,7 +8,7 @@
 // global variables
 int score = 0;
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, int nCmdShow) {
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
     Initialize the window class
     */
@@ -86,7 +86,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
 DWORD WINAPI gameLoop(HWND hwnd) {
     HDC hdc = GetDC(hwnd);
     // CreateSolidBrush(RGB(0, 0, 0));
-    HBRUSH brush;
+    HBRUSH brush = CreateSolidBrush(RGB(0,0,0));
     SelectObject(hdc, brush);
     while (TRUE) {
         // 624x421
@@ -95,6 +95,7 @@ DWORD WINAPI gameLoop(HWND hwnd) {
         drawRect(hdc, 50, 50);
         Sleep(500);
     }
+    DeleteObject(brush);
     ReleaseDC(hwnd, hdc);
 }
 
