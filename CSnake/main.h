@@ -16,9 +16,10 @@
 
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-DWORD WINAPI gameLoop();
+DWORD WINAPI gameLoop(HWND hwnd);
+void drawRect(HDC hdc, int x, int y);
 void printNum(HDC hdc, int x, int y, int num);
 void printString(HDC hdc, int x, int y, wchar_t string[]);
-void paintScore(HDC hdc, HWND hwnd, int score);
+void paintScore(HDC hdc, int score);
 
 #endif

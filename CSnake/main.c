@@ -75,7 +75,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
     HANDLE gameThread = CreateThread(NULL, 0, gameLoop, hwnd, 0, &threadID);
 
     MSG msg = { 0 };
-    int temp = 0;
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
@@ -86,11 +85,22 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE pInstance, PWSTR pCmdLine, in
 
 DWORD WINAPI gameLoop(HWND hwnd) {
     HDC hdc = GetDC(hwnd);
+    // CreateSolidBrush(RGB(0, 0, 0));
+    HBRUSH brush;
+    SelectObject(hdc, brush);
     while (TRUE) {
+        // 624x421
         score++;
-        paintScore(hdc, hwnd, score);
+        paintScore(hdc, score);
+        drawRect(hdc, 50, 50);
+        Sleep(500);
     }
     ReleaseDC(hwnd, hdc);
+}
+
+void drawRect(HDC hdc, int x, int y) {
+    // HDC, left, top, right, bottom
+    Rectangle(hdc, x-6, y-6, x+6, y+6);
 }
 
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
@@ -139,7 +149,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 }
 
 // Paints the score after the score text
-void paintScore(HDC hdc, HWND hwnd, int score) {
+void paintScore(HDC hdc, int score) {
     printNum(hdc, 53, 5, score);
 }
 
@@ -167,5 +177,6 @@ int numDigits(int n) {
     if (n < 1000) return 3;
     if (n < 10000) return 4;
     if (n < 100000) return 5;
+    if (n < 1000000) return 6;
     return -1;
 }
