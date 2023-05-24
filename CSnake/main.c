@@ -7,6 +7,13 @@
 
 // global variables
 int score = 0;
+HBRUSH blackBrush;
+HBRUSH whiteBrush;
+
+struct snake {
+    // [x,y]
+    int curr[2];
+};
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -84,19 +91,50 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 }
 
 DWORD WINAPI gameLoop(HWND hwnd) {
+    struct snake snake1 = { {50,50} };
+
     HDC hdc = GetDC(hwnd);
     // CreateSolidBrush(RGB(0, 0, 0));
-    HBRUSH brush = CreateSolidBrush(RGB(0,0,0));
-    SelectObject(hdc, brush);
+    blackBrush = CreateSolidBrush(RGB(0,0,0));
+    whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
     while (TRUE) {
         // 624x421
         score++;
-        paintScore(hdc, score);
-        drawRect(hdc, 50, 50);
-        Sleep(500);
+        //paintScore(hdc, score);
+
+        // 0:up, 1:down, 2:left, 3:right
+        snakeMove(hdc, &snake1, 1);
+
+        Sleep(50);
     }
-    DeleteObject(brush);
+    DeleteObject(blackBrush);
+    DeleteObject(whiteBrush);
     ReleaseDC(hwnd, hdc);
+}
+
+void snakeMove(HDC hdc, struct snake *snake1, int direction) {
+    SelectObject(hdc, whiteBrush);
+    drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
+
+    switch (direction) {
+        case 0:
+            (*snake1).curr[1] -= 10;
+            break;
+        case 1:
+            (*snake1).curr[1] += 10;
+            break;
+        case 2:
+            (*snake1).curr[0] -= 10;
+            break;
+        case 3:
+            (*snake1).curr[0] += 10;
+            break;
+    }
+
+
+    SelectObject(hdc, blackBrush);
+    drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
+    Sleep(400);
 }
 
 void drawRect(HDC hdc, int x, int y) {
@@ -157,7 +195,7 @@ void paintScore(HDC hdc, int score) {
 void printNum(HDC hdc, int x, int y, int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`
-    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num));
+    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num)+10);
     // Copy int `num` into wide character array buffer `temp`
     swprintf_s(temp, sizeof(temp), L"%d", num);
     // Print text to window
