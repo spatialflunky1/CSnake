@@ -7,8 +7,11 @@
 
 // global variables
 int score = 0;
+int direction = 0;
 HBRUSH blackBrush;
 HBRUSH whiteBrush;
+HPEN blackPen;
+HPEN whitePen;
 
 struct snake {
     // [x,y]
@@ -97,44 +100,50 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     // CreateSolidBrush(RGB(0, 0, 0));
     blackBrush = CreateSolidBrush(RGB(0,0,0));
     whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
+    whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
     while (TRUE) {
         // 624x421
         score++;
-        //paintScore(hdc, score);
+        paintScore(hdc, score);
 
-        // 0:up, 1:down, 2:left, 3:right
-        snakeMove(hdc, &snake1, 1);
-
-        Sleep(50);
+        // 0:none, 1:up, 2:down, 3:left, 4:right 
+        snakeMove(hdc, &snake1);
     }
     DeleteObject(blackBrush);
     DeleteObject(whiteBrush);
+    DeleteObject(blackPen);
+    DeleteObject(whitePen);
     ReleaseDC(hwnd, hdc);
 }
 
-void snakeMove(HDC hdc, struct snake *snake1, int direction) {
+void snakeMove(HDC hdc, struct snake *snake1) {
     SelectObject(hdc, whiteBrush);
+    SelectObject(hdc, whitePen);
     drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
 
     switch (direction) {
-        case 0:
-            (*snake1).curr[1] -= 10;
-            break;
         case 1:
-            (*snake1).curr[1] += 10;
+            if ((*snake1).curr[1] > 6) (*snake1).curr[1] -= 2;
             break;
         case 2:
-            (*snake1).curr[0] -= 10;
+            // Usable window height is 421 pixels (-6=415)
+            if ((*snake1).curr[1] < 415) (*snake1).curr[1] += 2;
             break;
         case 3:
-            (*snake1).curr[0] += 10;
+            if ((*snake1).curr[0] > 6) (*snake1).curr[0] -= 2;
+            break;
+        case 4:
+            // Usable window width is 624 pixels (-6=618)
+            if ((*snake1).curr[0] < 618) (*snake1).curr[0] += 2;
             break;
     }
 
 
     SelectObject(hdc, blackBrush);
+    SelectObject(hdc, blackPen);
     drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
-    Sleep(400);
+    Sleep(25);
 }
 
 void drawRect(HDC hdc, int x, int y) {
@@ -144,6 +153,7 @@ void drawRect(HDC hdc, int x, int y) {
 
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    HDC hdc;
     switch (uMsg) {
         // Stops the process when the window is closed
         case WM_DESTROY:
@@ -153,7 +163,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Fills ("paints") the window
         case WM_PAINT:
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
+            hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             printString(hdc, 5, 5, L"Score:");
             printNum(hdc, 53, 5, score);
@@ -181,6 +191,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     return 0;
             }
             return 0;
+
+        case WM_KEYDOWN:
+            // Left
+            if (wParam == 37 || wParam == 65) direction = 3;
+            // Up
+            else if (wParam == 38 || wParam == 87) direction = 1;
+            // Right
+            else if (wParam == 39 || wParam == 68) direction = 4;
+            // Down
+            else if (wParam == 40 || wParam == 83) direction = 2;
 
     }
     // Does the default action for the message if undefined in the switch
