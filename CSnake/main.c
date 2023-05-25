@@ -94,7 +94,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 }
 
 DWORD WINAPI gameLoop(HWND hwnd) {
-    struct snake snake1 = { {50,50} };
+    struct snake snake1 = { {309,207} };
 
     HDC hdc = GetDC(hwnd);
     // CreateSolidBrush(RGB(0, 0, 0));
@@ -105,7 +105,7 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     while (TRUE) {
         // 624x421
         score++;
-        paintScore(hdc, score);
+        paintScore(hdc, snake1.curr[0]);
 
         // 0:none, 1:up, 2:down, 3:left, 4:right 
         snakeMove(hdc, &snake1);
@@ -123,15 +123,21 @@ void snakeMove(HDC hdc, struct snake *snake1) {
     drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
 
     switch (direction) {
+        // Client Window: 
+        // X: 6-618, Y: 6-415
+        // Box: 
+        // X:0-95, Y:0-35
         case 1:
-            if ((*snake1).curr[1] > 6) (*snake1).curr[1] -= 2;
+            // 30 pixels away from the top to avoid touching score
+            if ((*snake1).curr[1] > 6 && ((*snake1).curr[0] >= 95 || (*snake1).curr[1] > 35))
+                    (*snake1).curr[1] -= 2;
             break;
         case 2:
             // Usable window height is 421 pixels (-6=415)
             if ((*snake1).curr[1] < 415) (*snake1).curr[1] += 2;
             break;
         case 3:
-            if ((*snake1).curr[0] > 6) (*snake1).curr[0] -= 2;
+            if ((*snake1).curr[0] > 6 && ((*snake1).curr[0] > 96 || (*snake1).curr[1] >= 35)) (*snake1).curr[0] -= 2;
             break;
         case 4:
             // Usable window width is 624 pixels (-6=618)
@@ -215,7 +221,7 @@ void paintScore(HDC hdc, int score) {
 void printNum(HDC hdc, int x, int y, int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`
-    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num)+10);
+    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num)+16);
     // Copy int `num` into wide character array buffer `temp`
     swprintf_s(temp, sizeof(temp), L"%d", num);
     // Print text to window
