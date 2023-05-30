@@ -42,3 +42,20 @@ int numDigits(int n) {
     if (n < 1000000) return 6;
     return -1;
 }
+
+// Append to an int array
+int** append(int array[][2], int rows, int val[2]) {
+    int** temp = malloc((rows + 1) * sizeof(int*));
+    for (int i = 0; i < rows + 1; i++) temp[i] = malloc(2 * sizeof(int));
+    for (int i = 0; i < rows + 1; i++) {
+        for (int j = 0; j < 2; j++) {
+            if (i < rows) {
+                temp[i][j] = array[i][j];
+            }
+            else {
+                temp[i][j] = val[j];
+            }
+        }
+    }
+    return temp;
+}

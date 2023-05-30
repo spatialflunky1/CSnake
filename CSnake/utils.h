@@ -13,5 +13,6 @@ void printNum(HDC hdc, int x, int y, int num);
 void printString(HDC hdc, int x, int y, wchar_t string[]);
 void paintScore(HDC hdc, int score);
 int numDigits(int n);
+int** append(int array[][2], int rows, int val[2]);
 
 #endif
