@@ -1,8 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <Windows.h>
-
 // Need to define UNICODE to avoid LPCSTR being used instead of wchat_t
 #ifndef UNICODE
 #define UNICODE
@@ -17,10 +15,5 @@
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 DWORD WINAPI gameLoop(HWND hwnd);
-void snakeMove(HDC hdc, struct snake* snake1);
-void drawRect(HDC hdc, int x, int y);
-void printNum(HDC hdc, int x, int y, int num);
-void printString(HDC hdc, int x, int y, wchar_t string[]);
-void paintScore(HDC hdc, int score);
 
 #endif

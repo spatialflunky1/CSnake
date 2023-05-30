@@ -1,22 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <Windows.h>
 #include <WinUser.h>
 #include <wingdi.h>
 #include "main.h"
+#include "utils.h"
+#include "game.h"
 
 // global variables
 int score = 0;
 int direction = 0;
-HBRUSH blackBrush;
-HBRUSH whiteBrush;
-HPEN blackPen;
-HPEN whitePen;
-
-struct snake {
-    // [x,y]
-    int curr[2];
-};
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -94,67 +88,27 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 }
 
 DWORD WINAPI gameLoop(HWND hwnd) {
-    struct snake snake1 = { {309,207} };
+    struct snake snake1 = { {{309,207}, {295, 207}}, NULL, NULL };
 
     HDC hdc = GetDC(hwnd);
     // CreateSolidBrush(RGB(0, 0, 0));
-    blackBrush = CreateSolidBrush(RGB(0,0,0));
-    whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
-    whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
+    HBRUSH blackBrush = CreateSolidBrush(RGB(0,0,0));
+    HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    HPEN blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
+    HPEN whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
     while (TRUE) {
         // 624x421
         score++;
-        paintScore(hdc, snake1.curr[0]);
+        //paintScore(hdc, snake1.curr[0]);
 
         // 0:none, 1:up, 2:down, 3:left, 4:right 
-        snakeMove(hdc, &snake1);
+        snakeMove(hdc, &snake1, whiteBrush, blackBrush, whitePen, blackPen, direction);
     }
     DeleteObject(blackBrush);
     DeleteObject(whiteBrush);
     DeleteObject(blackPen);
     DeleteObject(whitePen);
     ReleaseDC(hwnd, hdc);
-}
-
-void snakeMove(HDC hdc, struct snake *snake1) {
-    SelectObject(hdc, whiteBrush);
-    SelectObject(hdc, whitePen);
-    drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
-
-    switch (direction) {
-        // Client Window: 
-        // X: 6-618, Y: 6-415
-        // Box: 
-        // X:0-95, Y:0-35
-        case 1:
-            // 30 pixels away from the top to avoid touching score
-            if ((*snake1).curr[1] > 6 && ((*snake1).curr[0] >= 95 || (*snake1).curr[1] > 35))
-                    (*snake1).curr[1] -= 2;
-            break;
-        case 2:
-            // Usable window height is 421 pixels (-6=415)
-            if ((*snake1).curr[1] < 415) (*snake1).curr[1] += 2;
-            break;
-        case 3:
-            if ((*snake1).curr[0] > 6 && ((*snake1).curr[0] > 96 || (*snake1).curr[1] >= 35)) (*snake1).curr[0] -= 2;
-            break;
-        case 4:
-            // Usable window width is 624 pixels (-6=618)
-            if ((*snake1).curr[0] < 618) (*snake1).curr[0] += 2;
-            break;
-    }
-
-
-    SelectObject(hdc, blackBrush);
-    SelectObject(hdc, blackPen);
-    drawRect(hdc, (*snake1).curr[0], (*snake1).curr[1]);
-    Sleep(25);
-}
-
-void drawRect(HDC hdc, int x, int y) {
-    // HDC, left, top, right, bottom
-    Rectangle(hdc, x-6, y-6, x+6, y+6);
 }
 
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
@@ -173,7 +127,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             printString(hdc, 5, 5, L"Score:");
             printNum(hdc, 53, 5, score);
-            EndPaint(hdc, &ps);
+            EndPaint(hwnd, &ps);
             return 0;
 
         // Fix the mouse cursor not changing when hovered over the window
@@ -200,48 +154,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
         case WM_KEYDOWN:
             // Left
-            if (wParam == 37 || wParam == 65) direction = 3;
+            if ((wParam == 37 || wParam == 65) && direction != 4) direction = 3;
             // Up
-            else if (wParam == 38 || wParam == 87) direction = 1;
+            else if ((wParam == 38 || wParam == 87) && direction != 2) direction = 1;
             // Right
-            else if (wParam == 39 || wParam == 68) direction = 4;
+            else if ((wParam == 39 || wParam == 68) && direction != 3) direction = 4;
             // Down
-            else if (wParam == 40 || wParam == 83) direction = 2;
+            else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
 
     }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
-// Paints the score after the score text
-void paintScore(HDC hdc, int score) {
-    printNum(hdc, 53, 5, score);
-}
-
-void printNum(HDC hdc, int x, int y, int num) {
-    int len = numDigits(num);
-    // Create an empty wide character array of length `len`
-    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num)+16);
-    // Copy int `num` into wide character array buffer `temp`
-    swprintf_s(temp, sizeof(temp), L"%d", num);
-    // Print text to window
-    TextOut(hdc, x, y, temp, len);
-    // Free the memory location of the wide character array
-    free(temp);
-}
-
-void printString(HDC hdc, int x, int y, wchar_t string[]) {
-    int len = wcslen(string);
-    TextOut(hdc, x, y, string, len);
-}
-
-// it may LOOK unefficient but its the fastest method in C with the only use case of display resolutions
-int numDigits(int n) {
-    if (n < 10) return 1;
-    if (n < 100) return 2;
-    if (n < 1000) return 3;
-    if (n < 10000) return 4;
-    if (n < 100000) return 5;
-    if (n < 1000000) return 6;
-    return -1;
 }
