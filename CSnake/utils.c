@@ -18,7 +18,7 @@ void paintScore(HDC hdc, int score) {
 void printNum(HDC hdc, int x, int y, int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`
-    wchar_t* temp = (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16);
+    wchar_t* temp = num == 0 ? (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(1) + 16) : (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16);
     // Copy int `num` into wide character array buffer `temp`
     swprintf_s(temp, sizeof(temp), L"%d", num);
     // Print text to window

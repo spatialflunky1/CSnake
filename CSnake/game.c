@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "game.h"
 
-int snakeLength = 3;
+int snakeLength = 1;
 
 void changePos(struct snake* snake1, int direction, int index) {
     if (index != 0) {
@@ -42,7 +42,6 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBru
         snakeLength++;
         *increase = 0;
     }
-    paintScore(hdc, snakeLength);
 
     // Erase all rects
     for (int i = snakeLength-1; i >= 0; i--) {
@@ -61,6 +60,7 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBru
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
     }
 
+    paintScore(hdc, snakeLength-1);
     Sleep(100);
 }
 

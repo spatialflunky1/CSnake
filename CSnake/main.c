@@ -9,7 +9,6 @@
 #include "game.h"
 
 // global variables
-int score = 0;
 int direction = 0;
 int increase = 0;
 
@@ -90,9 +89,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 
 DWORD WINAPI gameLoop(HWND hwnd) {
     struct snake snake1 = { NULL, NULL, NULL };
-    int** temp = create2dArrayofSize(3);
+    int** temp = create2dArrayofSize(1);
     temp[0][0] = 309; temp[0][1] = 207;
-    temp[1][0] = 295; temp[1][1] = 207;
     snake1.curr = temp;
 
     HDC hdc = GetDC(hwnd);
@@ -125,7 +123,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             printString(hdc, 5, 5, L"Score:");
-            printNum(hdc, 53, 5, score);
             EndPaint(hwnd, &ps);
             return 0;
 
