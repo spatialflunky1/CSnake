@@ -68,6 +68,7 @@ void increaseSnakeLength(struct snake* snake1, HDC hdc) {
     int* newPoint = malloc(2*sizeof(int));
     newPoint[0] = 150; newPoint[1] = 150;
     int** temp = append((*snake1).curr, snakeLength, newPoint);
+    free(newPoint);
     (*snake1).curr = temp;
     paintScore(hdc, snakeLength);
 }
