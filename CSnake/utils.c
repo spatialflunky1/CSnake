@@ -30,8 +30,10 @@ void printNum(HDC hdc, int x, int y, int num) {
 }
 
 void printString(HDC hdc, int x, int y, wchar_t string[]) {
-    int len = wcslen(string);
-    TextOut(hdc, x, y, string, len);
+    size_t len = wcslen(string);
+    // Fix 'possible loss of data converting size_t to int' warning
+    if (len > INT_MAX) return;
+    TextOut(hdc, x, y, string, (int)len);
 }
 
 // it may LOOK unefficient but its the fastest method in C with the only use case of display resolutions
@@ -49,7 +51,7 @@ int numDigits(int n) {
 int** create2dArrayofSize(int rows) {
     int** temp = malloc((rows + 1) * sizeof(int*));
     // Fix null pointer warning
-    if (temp == NULL) return;
+    if (temp == NULL) return NULL;
     for (int i = 0; i < rows + 1; i++) temp[i] = malloc(2 * sizeof(int));
     return temp;
 }
