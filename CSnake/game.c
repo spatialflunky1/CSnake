@@ -5,6 +5,7 @@
 int snakeLength = 1;
 
 void changePos(struct snake* snake1, int direction, int index) {
+    // Sets every other value to the previous value
     if (index != 0) {
         (*snake1).curr[index][0] = (*snake1).curr[index - 1][0];
         (*snake1).curr[index][1] = (*snake1).curr[index - 1][1];
@@ -13,7 +14,7 @@ void changePos(struct snake* snake1, int direction, int index) {
         switch (direction) {
             // Client Window: 
             // X: 6-618, Y: 6-415
-            // Box: 
+            // Score box: 
             // X:0-95, Y:0-35
         case 1:
             // 30 pixels away from the top to avoid touching score
@@ -37,6 +38,7 @@ void changePos(struct snake* snake1, int direction, int index) {
 }
 
 void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HPEN whitePen, HPEN blackPen, int direction, int* increase) {
+    // Increases the length of the snake
     if (*increase) {
         increaseSnakeLength(snake1, hdc);
         snakeLength++;
@@ -65,9 +67,17 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBru
 }
 
 void increaseSnakeLength(struct snake* snake1, HDC hdc) {
+    // Allocate memory for a temporary list of 2 nums
     int* newPoint = malloc(2*sizeof(int));
-    newPoint[0] = 150; newPoint[1] = 150;
+    // Stop if unable to allocate memory
+    if (newPoint == NULL) {
+        free(newPoint);
+        return 0;
+    }
+    // Sets both values to 0 as the initial point does not matter
+    memset(newPoint, 0, 2 * sizeof(int));
     int** temp = append((*snake1).curr, snakeLength, newPoint);
+    // Frees the temporary memory
     free(newPoint);
     (*snake1).curr = temp;
     paintScore(hdc, snakeLength);
