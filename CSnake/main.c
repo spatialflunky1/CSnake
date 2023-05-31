@@ -96,17 +96,11 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     snake1.curr = temp;
 
     HDC hdc = GetDC(hwnd);
-    // CreateSolidBrush(RGB(0, 0, 0));
     HBRUSH blackBrush = CreateSolidBrush(RGB(0,0,0));
     HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
     HPEN blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
     HPEN whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
     while (TRUE) {
-        // 624x421
-        score++;
-        //paintScore(hdc, snake1.curr[0]);
-
-        // 0:none, 1:up, 2:down, 3:left, 4:right 
         snakeMove(hdc, &snake1, whiteBrush, blackBrush, whitePen, blackPen, direction, &increase);
     }
     DeleteObject(blackBrush);
