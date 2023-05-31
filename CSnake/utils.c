@@ -18,9 +18,11 @@ void paintScore(HDC hdc, int score) {
 void printNum(HDC hdc, int x, int y, int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`, if num==0 use 1 for log10 as 0 would make the function undefined
-    wchar_t* temp = num == 0 ? (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(1) + 16) : (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16);
+    wchar_t* temp = num != 0 ? (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16) : (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(1) + 16);
+    // Fix 'temp' may be '0' warning
+    if (temp == 0) return;
     // Copy int `num` into wide character array buffer `temp`
-    swprintf_s(temp, sizeof(temp), L"%d", num);
+    swprintf_s(temp, len+1, L"%d", num);
     // Print text to window
     TextOut(hdc, x, y, temp, len);
     // Free the memory location of the wide character array
@@ -46,6 +48,8 @@ int numDigits(int n) {
 // Creates an empty 2d array
 int** create2dArrayofSize(int rows) {
     int** temp = malloc((rows + 1) * sizeof(int*));
+    // Fix null pointer warning
+    if (temp == NULL) return;
     for (int i = 0; i < rows + 1; i++) temp[i] = malloc(2 * sizeof(int));
     return temp;
 }
