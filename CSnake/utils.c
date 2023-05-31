@@ -43,10 +43,16 @@ int numDigits(int n) {
     return -1;
 }
 
-// Append to an int array
-int** append(int array[][2], int rows, int val[2]) {
+// Creates an empty 2d array
+int** create2dArrayofSize(int rows) {
     int** temp = malloc((rows + 1) * sizeof(int*));
     for (int i = 0; i < rows + 1; i++) temp[i] = malloc(2 * sizeof(int));
+    return temp;
+}
+
+// Append to an int array
+int** append(int** array, int rows, int* val) {
+    int** temp = create2dArrayofSize(rows + 1);
     for (int i = 0; i < rows + 1; i++) {
         for (int j = 0; j < 2; j++) {
             if (i < rows) {

@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "game.h"
 
+int snakeLength = 3;
+
 void changePos(struct snake* snake1, int direction, int index) {
     if (index != 0) {
         (*snake1).curr[index][0] = (*snake1).curr[index - 1][0];
@@ -34,23 +36,38 @@ void changePos(struct snake* snake1, int direction, int index) {
     }
 }
 
-void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HPEN whitePen, HPEN blackPen, int direction) {
+void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HPEN whitePen, HPEN blackPen, int direction, int* increase) {
+    if (*increase) {
+        increaseSnakeLength(snake1, hdc);
+        snakeLength++;
+        *increase = 0;
+    }
+    paintScore(hdc, snakeLength);
+
     // Erase all rects
-    for (int i = 1; i >= 0; i--) {
+    for (int i = snakeLength-1; i >= 0; i--) {
         (*snake1).brush = whiteBrush;
         (*snake1).pen = whitePen;
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
     }
     // Change all rect positions
-    for (int i = 1; i >= 0; i--) {
+    for (int i = snakeLength-1; i >= 0; i--) {
         changePos(snake1, direction, i);
     }
     // Redraw all rects
-    for (int i = 1; i >= 0; i--) {
+    for (int i = snakeLength-1; i >= 0; i--) {
         (*snake1).brush = blackBrush;
         (*snake1).pen = blackPen;
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
     }
 
     Sleep(100);
+}
+
+void increaseSnakeLength(struct snake* snake1, HDC hdc) {
+    int* newPoint = malloc(2*sizeof(int));
+    newPoint[0] = 150; newPoint[1] = 150;
+    int** temp = append((*snake1).curr, snakeLength, newPoint);
+    (*snake1).curr = temp;
+    paintScore(hdc, snakeLength);
 }

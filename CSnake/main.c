@@ -11,6 +11,7 @@
 // global variables
 int score = 0;
 int direction = 0;
+int increase = 0;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -88,7 +89,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 }
 
 DWORD WINAPI gameLoop(HWND hwnd) {
-    struct snake snake1 = { {{309,207}, {295, 207}}, NULL, NULL };
+    struct snake snake1 = { NULL, NULL, NULL };
+    int** temp = create2dArrayofSize(3);
+    temp[0][0] = 309; temp[0][1] = 207;
+    temp[1][0] = 295; temp[1][1] = 207;
+    snake1.curr = temp;
 
     HDC hdc = GetDC(hwnd);
     // CreateSolidBrush(RGB(0, 0, 0));
@@ -102,7 +107,7 @@ DWORD WINAPI gameLoop(HWND hwnd) {
         //paintScore(hdc, snake1.curr[0]);
 
         // 0:none, 1:up, 2:down, 3:left, 4:right 
-        snakeMove(hdc, &snake1, whiteBrush, blackBrush, whitePen, blackPen, direction);
+        snakeMove(hdc, &snake1, whiteBrush, blackBrush, whitePen, blackPen, direction, &increase);
     }
     DeleteObject(blackBrush);
     DeleteObject(whiteBrush);
@@ -161,6 +166,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             else if ((wParam == 39 || wParam == 68) && direction != 3) direction = 4;
             // Down
             else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
+            else if (wParam == 32) increase=1;
 
     }
     // Does the default action for the message if undefined in the switch
