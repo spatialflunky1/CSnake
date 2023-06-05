@@ -3,11 +3,10 @@
 #include "game.h"
 
 int snakeLength = 1;
-int stuck = 0;
 
 int changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
-    if (index != 0 && !stuck) {
+    if (index != 0) {
         (*snake1).curr[index][0] = (*snake1).curr[index - 1][0];
         (*snake1).curr[index][1] = (*snake1).curr[index - 1][1];
     }
