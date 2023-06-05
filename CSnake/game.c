@@ -3,10 +3,11 @@
 #include "game.h"
 
 int snakeLength = 1;
+int stuck = 0;
 
 void changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
-    if (index != 0) {
+    if (index != 0 && !stuck) {
         //if (((*snake1).curr[index][0] == (*snake1).curr[index - 1][0]+6 || 
         //    (*snake1).curr[index][0] == (*snake1).curr[index - 1][0]-6) &&
         //    ((*snake1).curr[index][1] == (*snake1).curr[index - 1][1]-6 || 
@@ -24,6 +25,7 @@ void changePos(struct snake* snake1, int direction, int index) {
             // 30 pixels away from the top to avoid touching score
             if ((*snake1).curr[0][1] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] > 35))
                 (*snake1).curr[0][1] -= 15;
+            else stuck = 1;
             break;
         case 2:
             // Usable window height is 421 pixels (-6=415)
@@ -51,14 +53,14 @@ void setRandApple(struct snake *snake1) {
     (*snake1).apple[1] = num;
 }
 
-void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HBRUSH redBrush, HPEN whitePen, HPEN blackPen, HPEN redPen, int direction) {
+void snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
-        (*snake1).brush = whiteBrush;
-        (*snake1).pen = whitePen;
+        (*snake1).brush = backgroundBrush;
+        (*snake1).pen = backgroundPen;
         drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
         setRandApple(snake1);
-        (*snake1).brush = redBrush;
-        (*snake1).pen = redPen;
+        (*snake1).brush = appleBrush;
+        (*snake1).pen = applePen;
         drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
 
         increaseSnakeLength(snake1, hdc);
@@ -67,14 +69,14 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBru
     }
     
     // Draw apple
-    (*snake1).brush = redBrush;
-    (*snake1).pen = redPen;
+    (*snake1).brush = appleBrush;
+    (*snake1).pen = applePen;
     drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
 
     // Erase all rects
     for (int i = snakeLength-1; i >= 0; i--) {
-        (*snake1).brush = whiteBrush;
-        (*snake1).pen = whitePen;
+        (*snake1).brush = backgroundBrush;
+        (*snake1).pen = backgroundPen;
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
     }
     // Change all rect positions
@@ -83,8 +85,8 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBru
     }
     // Redraw all rects
     for (int i = snakeLength-1; i >= 0; i--) {
-        (*snake1).brush = blackBrush;
-        (*snake1).pen = blackPen;
+        (*snake1).brush = snakeBrush;
+        (*snake1).pen = snakePen;
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
     }
 
