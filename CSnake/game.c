@@ -5,55 +5,61 @@
 int snakeLength = 1;
 int stuck = 0;
 
-void changePos(struct snake* snake1, int direction, int index) {
+int changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
     if (index != 0 && !stuck) {
-        //if (((*snake1).curr[index][0] == (*snake1).curr[index - 1][0]+6 || 
-        //    (*snake1).curr[index][0] == (*snake1).curr[index - 1][0]-6) &&
-        //    ((*snake1).curr[index][1] == (*snake1).curr[index - 1][1]-6 || 
-        //    (*snake1).curr[index][1] == (*snake1).curr[index - 1][1]+6)) return;
         (*snake1).curr[index][0] = (*snake1).curr[index - 1][0];
         (*snake1).curr[index][1] = (*snake1).curr[index - 1][1];
     }
     else {
         switch (direction) {
             // Client Window: 
-            // X: 6-618, Y: 6-415
+            // X: 6-631, Y: 6-420
             // Score box: 
             // X:0-95, Y:0-35
         case 1:
             // 30 pixels away from the top to avoid touching score
-            if ((*snake1).curr[0][1] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] > 35))
+            if ((*snake1).curr[0][1] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
                 (*snake1).curr[0][1] -= 15;
-            else stuck = 1;
+            }
+            else return -1;
             break;
         case 2:
-            // Usable window height is 421 pixels (-6=415)
-            if ((*snake1).curr[0][1] < 415) (*snake1).curr[0][1] += 15;
+            // Usable window height is 421 pixels (-6=420)
+            if ((*snake1).curr[0][1] < 420) {
+                (*snake1).curr[0][1] += 15;
+            }
+            else return -1;
             break;
         case 3:
-            if ((*snake1).curr[0][0] > 6 && ((*snake1).curr[0][0] > 96 || (*snake1).curr[0][1] >= 35))
+            if ((*snake1).curr[0][0] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
                 (*snake1).curr[0][0] -= 15;
+            }
+            else return -1;
             break;
         case 4:
-            // Usable window width is 624 pixels (-6=618)
-            if ((*snake1).curr[0][0] < 618) (*snake1).curr[0][0] += 15;
+            // Usable window width is 624 pixels (-6=631)
+            if ((*snake1).curr[0][0] < 631) {
+                (*snake1).curr[0][0] += 15;
+            }
+            else return -1;
             break;
         }
     }
+    return 0;
 }
 
 void setRandApple(struct snake *snake1) {
-    int num = rand() % 618;
-    while (num % 15 != 0 || num < 95) num = rand() % 618;
+    int num = rand() % 631;
+    while (num % 15 != 0 || num < 95) num = rand() % 631;
     (*snake1).apple[0] = num;
 
-    num = rand() % 415;
-    while (num % 15 != 0 || num < 35) num = rand() % 415;
+    num = rand() % 420;
+    while (num % 15 != 0 || num < 35) num = rand() % 420;
     (*snake1).apple[1] = num;
 }
 
-void snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
+int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
         (*snake1).brush = backgroundBrush;
         (*snake1).pen = backgroundPen;
@@ -81,7 +87,7 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH sna
     }
     // Change all rect positions
     for (int i = snakeLength-1; i >= 0; i--) {
-        changePos(snake1, direction, i);
+        if (changePos(snake1, direction, i) == -1) return -1;
     }
     // Redraw all rects
     for (int i = snakeLength-1; i >= 0; i--) {
@@ -92,6 +98,7 @@ void snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH sna
 
     paintScore(hdc, snakeLength-1);
     Sleep(100);
+    return 0;
 }
 
 void increaseSnakeLength(struct snake* snake1, HDC hdc) {

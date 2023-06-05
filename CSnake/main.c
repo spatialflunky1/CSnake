@@ -105,8 +105,11 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     HPEN redPen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 
     while (TRUE) {
-        snakeMove(hdc, &snake1, whiteBrush, blackBrush, redBrush, whitePen, blackPen, redPen, direction);
+        if (snakeMove(hdc, &snake1, whiteBrush, blackBrush, redBrush, whitePen, blackPen, redPen, direction) == -1) break;
     }
+
+    printString(hdc, 270, 200, L"Game Over!");
+
     DeleteObject(blackBrush);
     DeleteObject(whiteBrush);
     DeleteObject(redBrush);

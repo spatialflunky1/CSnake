@@ -9,8 +9,8 @@
 #define ID_QUIT 100
 #define ID_ABOUT 101
 #define ID_SETTINGS 102
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 653
+#define HEIGHT 485
 
 // Initializes the window procedure signature
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
