@@ -7,6 +7,10 @@ int snakeLength = 1;
 void changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
     if (index != 0) {
+        //if (((*snake1).curr[index][0] == (*snake1).curr[index - 1][0]+6 || 
+        //    (*snake1).curr[index][0] == (*snake1).curr[index - 1][0]-6) &&
+        //    ((*snake1).curr[index][1] == (*snake1).curr[index - 1][1]-6 || 
+        //    (*snake1).curr[index][1] == (*snake1).curr[index - 1][1]+6)) return;
         (*snake1).curr[index][0] = (*snake1).curr[index - 1][0];
         (*snake1).curr[index][1] = (*snake1).curr[index - 1][1];
     }
@@ -37,13 +41,35 @@ void changePos(struct snake* snake1, int direction, int index) {
     }
 }
 
-void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HPEN whitePen, HPEN blackPen, int direction, int* increase) {
-    // Increases the length of the snake
-    if (*increase) {
+void setRandApple(struct snake *snake1) {
+    int num = rand() % 618;
+    while (num % 15 != 0 || num < 95) num = rand() % 618;
+    (*snake1).apple[0] = num;
+
+    num = rand() % 415;
+    while (num % 15 != 0 || num < 35) num = rand() % 415;
+    (*snake1).apple[1] = num;
+}
+
+void snakeMove(HDC hdc, struct snake* snake1, HBRUSH whiteBrush, HBRUSH blackBrush, HBRUSH redBrush, HPEN whitePen, HPEN blackPen, HPEN redPen, int direction) {
+    if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
+        (*snake1).brush = whiteBrush;
+        (*snake1).pen = whitePen;
+        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
+        setRandApple(snake1);
+        (*snake1).brush = redBrush;
+        (*snake1).pen = redPen;
+        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
+
         increaseSnakeLength(snake1, hdc);
+        setRandApple(&snake1);
         snakeLength++;
-        *increase = 0;
     }
+    
+    // Draw apple
+    (*snake1).brush = redBrush;
+    (*snake1).pen = redPen;
+    drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
 
     // Erase all rects
     for (int i = snakeLength-1; i >= 0; i--) {

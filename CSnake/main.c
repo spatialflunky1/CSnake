@@ -10,7 +10,6 @@
 
 // global variables
 int direction = 0;
-int increase = 0;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -88,23 +87,32 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
 }
 
 DWORD WINAPI gameLoop(HWND hwnd) {
-    struct snake snake1 = { NULL, NULL, NULL };
+    struct snake snake1;
     int** temp = create2dArrayofSize(1);
-    temp[0][0] = 309; temp[0][1] = 207;
+    temp[0][0] = 330; temp[0][1] = 210;
     snake1.curr = temp;
+
+    // Initialize rand for apple position
+    srand(time(NULL));
+    setRandApple(&snake1);
 
     HDC hdc = GetDC(hwnd);
     HBRUSH blackBrush = CreateSolidBrush(RGB(0,0,0));
     HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
     HPEN blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
     HPEN whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
+    HPEN redPen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
+
     while (TRUE) {
-        snakeMove(hdc, &snake1, whiteBrush, blackBrush, whitePen, blackPen, direction, &increase);
+        snakeMove(hdc, &snake1, whiteBrush, blackBrush, redBrush, whitePen, blackPen, redPen, direction);
     }
     DeleteObject(blackBrush);
     DeleteObject(whiteBrush);
+    DeleteObject(redBrush);
     DeleteObject(blackPen);
     DeleteObject(whitePen);
+    DeleteObject(redPen);
     ReleaseDC(hwnd, hdc);
 }
 
@@ -157,7 +165,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             else if ((wParam == 39 || wParam == 68) && direction != 3) direction = 4;
             // Down
             else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
-            else if (wParam == 32) increase=1;
 
     }
     // Does the default action for the message if undefined in the switch

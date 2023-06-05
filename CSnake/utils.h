@@ -6,6 +6,7 @@
 struct snake {
     // [x,y]
     int** curr;
+    int apple[2];
     HBRUSH brush;
     HPEN pen;
 };
