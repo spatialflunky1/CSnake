@@ -62,11 +62,11 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
         (*snake1).brush = backgroundBrush;
         (*snake1).pen = backgroundPen;
-        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
+        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
         setRandApple(snake1);
         (*snake1).brush = appleBrush;
         (*snake1).pen = applePen;
-        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
+        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
 
         increaseSnakeLength(snake1, hdc);
         setRandApple(&snake1);
@@ -76,13 +76,13 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
     // Draw apple
     (*snake1).brush = appleBrush;
     (*snake1).pen = applePen;
-    drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], snake1);
+    drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
 
     // Erase all rects
     for (int i = snakeLength-1; i >= 0; i--) {
         (*snake1).brush = backgroundBrush;
         (*snake1).pen = backgroundPen;
-        drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
+        drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], 6, snake1);
     }
     // Change all rect positions
     for (int i = snakeLength-1; i >= 0; i--) {
@@ -92,9 +92,12 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
     for (int i = snakeLength-1; i >= 0; i--) {
         (*snake1).brush = snakeBrush;
         (*snake1).pen = snakePen;
-        drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], snake1);
+        drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], 6, snake1);
     }
 
+    SelectObject(hdc, backgroundBrush);
+    Rectangle(hdc, 0, 0, 84, 24);
+    printString(hdc, 5, 5, L"Score:");
     paintScore(hdc, snakeLength-1);
     Sleep(100);
     return 0;

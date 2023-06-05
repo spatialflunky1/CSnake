@@ -3,11 +3,11 @@
 #include <math.h>
 #include "utils.h"
 
-void drawRect(HDC hdc, int x, int y, struct snake* snake1) {
+void drawRect(HDC hdc, int x, int y, int size, struct snake* snake1) {
     // HDC, left, top, right, bottom
     SelectObject(hdc, (*snake1).brush);
     SelectObject(hdc, (*snake1).pen);
-    Rectangle(hdc, x - 6, y - 6, x + 6, y + 6);
+    Rectangle(hdc, x - size, y - size, x + size, y + size);
 }
 
 // Paints the score after the score text
