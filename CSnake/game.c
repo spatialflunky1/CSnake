@@ -60,9 +60,6 @@ void setRandApple(struct snake *snake1) {
 
 int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
-        (*snake1).brush = backgroundBrush;
-        (*snake1).pen = backgroundPen;
-        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
         setRandApple(snake1);
 
         increaseSnakeLength(snake1, hdc);
