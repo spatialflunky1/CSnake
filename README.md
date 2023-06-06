@@ -7,6 +7,9 @@ C-Snake / CompSci-(s)nake
 ## How to Run
 Open `CSnake.sln` in Visual Studio
 
+## Future features:
+- [ ] Preferences menu for changing color
+
 ## Dependencies:
 #### Windows
 #### Visual Studio 2022
