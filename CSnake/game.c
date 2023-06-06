@@ -107,5 +107,4 @@ void increaseSnakeLength(struct snake* snake1, HDC hdc) {
     // Frees the temporary memory
     free(newPoint);
     (*snake1).curr = temp;
-    paintScore(hdc, snakeLength);
 }
