@@ -95,11 +95,6 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], 6, snake1);
     }
 
-    if (GetDCBrushColor(hdc) != RGB(0,0,0)) {
-        SelectObject(hdc, backgroundBrush);
-    }
-    Rectangle(hdc, 0, 0, 84, 24);
-    printString(hdc, 5, 5, L"Score:");
     paintScore(hdc, snakeLength-1);
     Sleep(100);
     return 0;
