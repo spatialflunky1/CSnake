@@ -64,9 +64,6 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
         (*snake1).pen = backgroundPen;
         drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
         setRandApple(snake1);
-        (*snake1).brush = appleBrush;
-        (*snake1).pen = applePen;
-        drawRect(hdc, (*snake1).apple[0], (*snake1).apple[1], 6, snake1);
 
         increaseSnakeLength(snake1, hdc);
         snakeLength++;
