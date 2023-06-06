@@ -18,7 +18,7 @@ int changePos(struct snake* snake1, int direction, int index) {
             // X:0-95, Y:0-35
         case 1:
             // 30 pixels away from the top to avoid touching score
-            if ((*snake1).curr[0][1] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
+            if ((*snake1).curr[0][1] > 15 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
                 (*snake1).curr[0][1] -= 15;
             }
             else return -1;
@@ -31,7 +31,7 @@ int changePos(struct snake* snake1, int direction, int index) {
             else return -1;
             break;
         case 3:
-            if ((*snake1).curr[0][0] > 6 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
+            if ((*snake1).curr[0][0] > 15 && ((*snake1).curr[0][0] >= 95 || (*snake1).curr[0][1] >= 35)) {
                 (*snake1).curr[0][0] -= 15;
             }
             else return -1;
@@ -95,7 +95,9 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], 6, snake1);
     }
 
-    SelectObject(hdc, backgroundBrush);
+    if (GetDCBrushColor(hdc) != RGB(0,0,0)) {
+        SelectObject(hdc, backgroundBrush);
+    }
     Rectangle(hdc, 0, 0, 84, 24);
     printString(hdc, 5, 5, L"Score:");
     paintScore(hdc, snakeLength-1);
