@@ -16,6 +16,7 @@ HBRUSH appleBrush;
 HPEN snakePen;
 HPEN backgroundPen;
 HPEN applePen;
+HWND settingsHwnd;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -26,16 +27,26 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
     // wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
     const wchar_t CLASS_NAME[] = L"Main Window Class";
     WNDCLASS wc = { 0 };
+    wc.lpfnWndProc = WindowProc; // pointer to the window procedure function
+    wc.hInstance = hInstance; // handle to the application instance
+    wc.lpszClassName = CLASS_NAME; // string identifier of the window class
 
-    // lpfnWndProc is a pointer to the window procedure function, defines ("most of") the behavior of the window
-    wc.lpfnWndProc = WindowProc;
-    // hInstance is the handle to the application instance
-    wc.hInstance = hInstance;
-    // lpszClassName is the string identifier of the window class
-    wc.lpszClassName = CLASS_NAME;
+    // Settings window class and window creation
+    const wchar_t CLASS_NAME_SETTINGS[] = L"Settings Window Class";
+    WNDCLASS wc_s = { 0 };
+    wc_s.lpfnWndProc = WindowProcSettings;
+    wc_s.hInstance = hInstance;
+    wc_s.lpszClassName = CLASS_NAME_SETTINGS;
 
     // Registers the window class with the operating system
-    RegisterClass(&wc);
+    if (!RegisterClass(&wc)) {
+        MessageBox(NULL, L"Main window class creation failed", L"Fatal Error!", MB_ICONERROR);
+        return 0;
+    }
+    if (!RegisterClass(&wc_s)) {
+        MessageBox(NULL, L"Settings window class creation failed", L"Fatal Error!", MB_ICONERROR);
+        return 0;
+    }
 
     /*
     create the window
@@ -72,7 +83,27 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
         NULL            // Additional application data
     );
 
-    if (hwnd == NULL) return 0;
+    settingsHwnd = CreateWindowEx(
+        0,
+        CLASS_NAME_SETTINGS,
+        L"CSnake Settings",
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+        // Size and Position (xPos, yPos, width, height)
+        CW_USEDEFAULT, CW_USEDEFAULT, 320, 240,
+        hwnd,
+        NULL,
+        hInstance,
+        NULL 
+    );
+
+    if (hwnd == NULL) {
+        MessageBox(NULL, L"Main window creation failed", L"Fatal Error!", MB_ICONERROR);
+        return 0;
+    }
+    if (settingsHwnd == NULL) {
+        MessageBox(NULL, L"Settings window creation failed", L"Fatal Error!", MB_ICONERROR);
+        return 0;
+    }
 
     ShowWindow(hwnd, nCmdShow);
 
@@ -168,6 +199,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case ID_ABOUT:
                     MessageBox(hwnd, L"CSnake 2023 AP CSA Final Project", L"About CSnake", MB_OK | MB_ICONINFORMATION);
                     return 0;
+
+                case ID_SETTINGS:
+                    ShowWindow(settingsHwnd, SW_SHOW);
+                    return 0;
             }
             return 0;
 
@@ -182,6 +217,12 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
 
     }
+    // Does the default action for the message if undefined in the switch
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+// WindowProcSettings(windowHandle, message, additionalParameter, additionalParameter)
+LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

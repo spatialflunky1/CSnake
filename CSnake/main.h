@@ -12,8 +12,8 @@
 #define WIDTH 653
 #define HEIGHT 485
 
-// Initializes the window procedure signature
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 DWORD WINAPI gameLoop(HWND hwnd);
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #endif
