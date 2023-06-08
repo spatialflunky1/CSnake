@@ -97,25 +97,30 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     setRandApple(&snake1);
 
     HDC hdc = GetDC(hwnd);
-    HBRUSH blackBrush = CreateSolidBrush(RGB(0,0,0));
-    HBRUSH whiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    HBRUSH redBrush = CreateSolidBrush(RGB(255, 0, 0));
-    HPEN blackPen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
-    HPEN whitePen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
-    HPEN redPen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
+    /*
+    Snake: Black
+    Background: White
+    Apple: Red
+    */
+    HBRUSH snakeBrush = CreateSolidBrush(RGB(0,0,0));
+    HBRUSH backgroundBrush = CreateSolidBrush(RGB(255, 255, 255));
+    HBRUSH appleBrush = CreateSolidBrush(RGB(255, 0, 0));
+    HPEN snakePen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
+    HPEN backgroundPen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
+    HPEN applePen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 
     while (TRUE) {
-        if (snakeMove(hdc, &snake1, whiteBrush, blackBrush, redBrush, whitePen, blackPen, redPen, direction) == -1) break;
+        if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
     }
 
     printString(hdc, 270, 200, L"Game Over!");
 
-    DeleteObject(blackBrush);
-    DeleteObject(whiteBrush);
-    DeleteObject(redBrush);
-    DeleteObject(blackPen);
-    DeleteObject(whitePen);
-    DeleteObject(redPen);
+    DeleteObject(snakeBrush);
+    DeleteObject(backgroundBrush);
+    DeleteObject(appleBrush);
+    DeleteObject(snakePen);
+    DeleteObject(backgroundPen);
+    DeleteObject(applePen);
     ReleaseDC(hwnd, hdc);
 }
 
