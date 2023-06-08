@@ -116,7 +116,7 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     applePen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 
     while (TRUE) {
-        if (snakeMove(hdc, &snake1) == -1) break;
+        if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
     }
 
     printString(hdc, 270, 200, L"Game Over!");
