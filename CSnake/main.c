@@ -30,6 +30,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
     wc.lpfnWndProc = WindowProc; // pointer to the window procedure function
     wc.hInstance = hInstance; // handle to the application instance
     wc.lpszClassName = CLASS_NAME; // string identifier of the window class
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
     // Settings window class and window creation
     const wchar_t CLASS_NAME_SETTINGS[] = L"Settings Window Class";
@@ -37,6 +38,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
     wc_s.lpfnWndProc = WindowProcSettings;
     wc_s.hInstance = hInstance;
     wc_s.lpszClassName = CLASS_NAME_SETTINGS;
+    wc_s.hCursor = LoadCursor(NULL, IDC_ARROW);
 
     // Registers the window class with the operating system
     if (!RegisterClass(&wc)) {
@@ -178,14 +180,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             Rectangle(hdc, 0, 0, 84, 24);
             printString(hdc, 5, 5, L"Score:");
             EndPaint(hwnd, &ps);
-            return 0;
-
-        // Fix the mouse cursor not changing when hovered over the window
-        // ex. stuck on resize horizontal cursor after moving into the window from the right
-        //TODO: make sure this is the efficient way to do this (mousehover doesn't work)
-        case WM_MOUSEMOVE:
-            HCURSOR defaultCur = LoadCursor(NULL, IDC_ARROW);
-            SetCursor(defaultCur);
             return 0;
 
         // Recieves the input for buttons being pressed
