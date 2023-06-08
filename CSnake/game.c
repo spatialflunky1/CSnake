@@ -3,6 +3,13 @@
 #include "game.h"
 
 int snakeLength = 1;
+extern int direction;
+extern HBRUSH snakeBrush;
+extern HBRUSH backgroundBrush;
+extern HBRUSH appleBrush;
+extern HPEN snakePen;
+extern HPEN backgroundPen;
+extern HPEN applePen;
 
 int changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
@@ -58,7 +65,7 @@ void setRandApple(struct snake *snake1) {
     (*snake1).apple[1] = num;
 }
 
-int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
+int snakeMove(HDC hdc, struct snake* snake1) {
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
         setRandApple(snake1);
 

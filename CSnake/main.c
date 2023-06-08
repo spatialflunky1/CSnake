@@ -10,6 +10,12 @@
 
 // global variables
 int direction = 0;
+HBRUSH snakeBrush;
+HBRUSH backgroundBrush;
+HBRUSH appleBrush;
+HPEN snakePen;
+HPEN backgroundPen;
+HPEN applePen;
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
@@ -102,15 +108,15 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     Background: White
     Apple: Red
     */
-    HBRUSH snakeBrush = CreateSolidBrush(RGB(0,0,0));
-    HBRUSH backgroundBrush = CreateSolidBrush(RGB(255, 255, 255));
-    HBRUSH appleBrush = CreateSolidBrush(RGB(255, 0, 0));
-    HPEN snakePen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
-    HPEN backgroundPen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
-    HPEN applePen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
+    snakeBrush = CreateSolidBrush(RGB(0,0,0));
+    backgroundBrush = CreateSolidBrush(RGB(255, 255, 255));
+    appleBrush = CreateSolidBrush(RGB(255, 0, 0));
+    snakePen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
+    backgroundPen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
+    applePen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
 
     while (TRUE) {
-        if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
+        if (snakeMove(hdc, &snake1) == -1) break;
     }
 
     printString(hdc, 270, 200, L"Game Over!");
