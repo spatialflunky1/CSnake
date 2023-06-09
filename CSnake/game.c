@@ -38,7 +38,7 @@ int changePos(struct snake* snake1, int direction, int index) {
             break;
         case 4:
             // Usable window width is 624 pixels (-6=631)
-            if ((*snake1).curr[0][0] < 631) {
+            if ((*snake1).curr[0][0] < 630) {
                 (*snake1).curr[0][0] += 15;
             }
             else return -1;
