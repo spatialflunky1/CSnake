@@ -16,35 +16,36 @@ HBRUSH appleBrush;
 HPEN snakePen;
 HPEN backgroundPen;
 HPEN applePen;
-HWND settingsHwnd;
+// wchar_t is used instead of char as the Windows API requires it
+// wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
+const wchar_t CLASS_NAME[] = L"Main Window Class";
+const wchar_t CLASS_NAME_SETTINGS[] = L"Settings Window Class";
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_ LPWSTR pCmdLine, _In_ int nCmdShow) {
     /*
     Initialize the window class
     */
 
-    // wchar_t is used instead of char as the Windows API requires it
-    // wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
-    const wchar_t CLASS_NAME[] = L"Main Window Class";
+    // Main window class and window creation
     WNDCLASS wc = { 0 };
     wc.lpfnWndProc = WindowProc; // pointer to the window procedure function
     wc.hInstance = hInstance; // handle to the application instance
     wc.lpszClassName = CLASS_NAME; // string identifier of the window class
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 
+    // Registers the window class with the operating system
+    if (!RegisterClass(&wc)) {
+        MessageBox(NULL, L"Main window class creation failed", L"Fatal Error!", MB_ICONERROR);
+        return 0;
+    }
+
     // Settings window class and window creation
-    const wchar_t CLASS_NAME_SETTINGS[] = L"Settings Window Class";
     WNDCLASS wc_s = { 0 };
     wc_s.lpfnWndProc = WindowProcSettings;
     wc_s.hInstance = hInstance;
     wc_s.lpszClassName = CLASS_NAME_SETTINGS;
     wc_s.hCursor = LoadCursor(NULL, IDC_ARROW);
 
-    // Registers the window class with the operating system
-    if (!RegisterClass(&wc)) {
-        MessageBox(NULL, L"Main window class creation failed", L"Fatal Error!", MB_ICONERROR);
-        return 0;
-    }
     if (!RegisterClass(&wc_s)) {
         MessageBox(NULL, L"Settings window class creation failed", L"Fatal Error!", MB_ICONERROR);
         return 0;
@@ -85,25 +86,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
         NULL            // Additional application data
     );
 
-    settingsHwnd = CreateWindowEx(
-        0,
-        CLASS_NAME_SETTINGS,
-        L"CSnake Settings",
-        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-        // Size and Position (xPos, yPos, width, height)
-        CW_USEDEFAULT, CW_USEDEFAULT, 320, 240,
-        hwnd,
-        NULL,
-        hInstance,
-        NULL 
-    );
-
     if (hwnd == NULL) {
         MessageBox(NULL, L"Main window creation failed", L"Fatal Error!", MB_ICONERROR);
-        return 0;
-    }
-    if (settingsHwnd == NULL) {
-        MessageBox(NULL, L"Settings window creation failed", L"Fatal Error!", MB_ICONERROR);
         return 0;
     }
 
@@ -163,9 +147,16 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     ReleaseDC(hwnd, hdc);
 }
 
+DWORD WINAPI settingsThread(HWND settingsHwnd) {
+    MSG msg = { 0 };
+    while (GetMessage(&msg, settingsHwnd, 0, 0) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
 // WindowProc(windowHandle, message, additionalParameter, additionalParameter)
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    HDC hdc;
     switch (uMsg) {
         // Stops the process when the window is closed
         case WM_DESTROY:
@@ -175,7 +166,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Fills ("paints") the window
         case WM_PAINT:
             PAINTSTRUCT ps;
-            hdc = BeginPaint(hwnd, &ps);
+            HDC hdc = BeginPaint(hwnd, &ps);
             FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
             Rectangle(hdc, 0, 0, 84, 24);
             printString(hdc, 5, 5, L"Score:");
@@ -195,7 +186,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                     return 0;
 
                 case ID_SETTINGS:
+                    HINSTANCE hInstance = GetModuleHandle(NULL);
+                    HWND settingsHwnd = CreateWindowEx(
+                        0,
+                        CLASS_NAME_SETTINGS,
+                        L"CSnake Settings",
+                        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                        // Size and Position (xPos, yPos, width, height)
+                        CW_USEDEFAULT, CW_USEDEFAULT, 400, 320,
+                        hwnd,
+                        NULL,
+                        hInstance,
+                        NULL
+                    );
+
+                    if (settingsHwnd == NULL) {
+                        MessageBox(NULL, L"Settings window creation failed", L"Fatal Error!", MB_ICONERROR);
+                        return 0;
+                    }
+
                     ShowWindow(settingsHwnd, SW_SHOW);
+                    DWORD threadID2 = 1;
+                    HANDLE sThread = CreateThread(NULL, 0, settingsThread, settingsHwnd, 0, &threadID2);
                     return 0;
             }
             return 0;
@@ -217,6 +229,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 // WindowProcSettings(windowHandle, message, additionalParameter, additionalParameter)
 LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+
+    }
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
