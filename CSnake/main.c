@@ -8,14 +8,30 @@
 #include "utils.h"
 #include "game.h"
 
-// global variables
+/*
+global variables
+*/
+
+// Snake direction
 int direction = 0;
+
+// Settings thread
+DWORD threadIDSettings = 1;
+HANDLE sThread;
+int closeSettings = 0;
+
+// Game thread
+DWORD threadID = 0;
+HANDLE gameThread;
+
+// Pens and brushes
 HBRUSH snakeBrush;
 HBRUSH backgroundBrush;
 HBRUSH appleBrush;
 HPEN snakePen;
 HPEN backgroundPen;
 HPEN applePen;
+
 // wchar_t is used instead of char as the Windows API requires it
 // wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
 const wchar_t CLASS_NAME[] = L"Main Window Class";
@@ -97,8 +113,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE pInstance, _In_
     loop the program
     */
 
-    DWORD threadID = 0;
-    HANDLE gameThread = CreateThread(NULL, 0, gameLoop, hwnd, 0, &threadID);
+    gameThread = CreateThread(NULL, 0, gameLoop, hwnd, 0, &threadID);
 
     MSG msg = { 0 };
     while (GetMessage(&msg, NULL, 0, 0) > 0) {
@@ -150,6 +165,10 @@ DWORD WINAPI gameLoop(HWND hwnd) {
 DWORD WINAPI settingsThread(HWND settingsHwnd) {
     MSG msg = { 0 };
     while (GetMessage(&msg, settingsHwnd, 0, 0) > 0) {
+        if (closeSettings) {
+            closeSettings = 0;
+            ExitThread(0);
+        }
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -159,68 +178,80 @@ DWORD WINAPI settingsThread(HWND settingsHwnd) {
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         // Stops the process when the window is closed
-        case WM_DESTROY:
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+
+        // Fills ("paints") the window
+    case WM_PAINT:
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        Rectangle(hdc, 0, 0, 84, 24);
+        printString(hdc, 5, 5, L"Score:");
+        EndPaint(hwnd, &ps);
+        return 0;
+
+        // Recieves the input for buttons being pressed
+    case WM_COMMAND:
+        int wmId = LOWORD(wParam);
+        switch (wmId) {
+        case ID_QUIT:
             PostQuitMessage(0);
             return 0;
 
-        // Fills ("paints") the window
-        case WM_PAINT:
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hwnd, &ps);
-            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-            Rectangle(hdc, 0, 0, 84, 24);
-            printString(hdc, 5, 5, L"Score:");
-            EndPaint(hwnd, &ps);
+        case ID_ABOUT:
+            MessageBox(hwnd, L"CSnake 2023 AP CSA Final Project", L"About CSnake", MB_OK | MB_ICONINFORMATION);
             return 0;
 
-        // Recieves the input for buttons being pressed
-        case WM_COMMAND:
-            int wmId = LOWORD(wParam);
-            switch (wmId) {
-                case ID_QUIT:
-                    PostQuitMessage(0);
-                    return 0;
+        case ID_SETTINGS:
+            HINSTANCE hInstance = GetModuleHandle(NULL);
+            HWND settingsHwnd = CreateWindowEx(
+                0,
+                CLASS_NAME_SETTINGS,
+                L"CSnake Settings",
+                WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                // Size and Position (xPos, yPos, width, height)
+                CW_USEDEFAULT, CW_USEDEFAULT, 400, 320,
+                hwnd,
+                NULL,
+                hInstance,
+                NULL
+            );
 
-                case ID_ABOUT:
-                    MessageBox(hwnd, L"CSnake 2023 AP CSA Final Project", L"About CSnake", MB_OK | MB_ICONINFORMATION);
-                    return 0;
-
-                case ID_SETTINGS:
-                    HINSTANCE hInstance = GetModuleHandle(NULL);
-                    HWND settingsHwnd = CreateWindowEx(
-                        0,
-                        CLASS_NAME_SETTINGS,
-                        L"CSnake Settings",
-                        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-                        // Size and Position (xPos, yPos, width, height)
-                        CW_USEDEFAULT, CW_USEDEFAULT, 400, 320,
-                        hwnd,
-                        NULL,
-                        hInstance,
-                        NULL
-                    );
-
-                    if (settingsHwnd == NULL) {
-                        MessageBox(NULL, L"Settings window creation failed", L"Fatal Error!", MB_ICONERROR);
-                        return 0;
-                    }
-
-                    ShowWindow(settingsHwnd, SW_SHOW);
-                    DWORD threadID2 = 1;
-                    HANDLE sThread = CreateThread(NULL, 0, settingsThread, settingsHwnd, 0, &threadID2);
-                    return 0;
+            if (settingsHwnd == NULL) {
+                MessageBox(NULL, L"Settings window creation failed", L"Fatal Error!", MB_ICONERROR);
+                return 0;
             }
-            return 0;
 
-        case WM_KEYDOWN:
-            // Left
-            if ((wParam == 37 || wParam == 65) && direction != 4) direction = 3;
-            // Up
-            else if ((wParam == 38 || wParam == 87) && direction != 2) direction = 1;
-            // Right
-            else if ((wParam == 39 || wParam == 68) && direction != 3) direction = 4;
-            // Down
-            else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
+            HWND hwndButton = CreateWindow(
+                L"BUTTON",  // Predefined class; Unicode assumed 
+                L"OK",      // Button text 
+                WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+                301,         // x position 
+                250,         // y position 
+                75,          // Button width
+                25,          // Button height
+                settingsHwnd,     // Parent window
+                (HMENU)BTN_OK,    // No menu.
+                (HINSTANCE)GetWindowLongPtr(settingsHwnd, GWLP_HINSTANCE),
+                NULL);      // Pointer not needed.
+
+            ShowWindow(settingsHwnd, SW_SHOW);
+            sThread = CreateThread(NULL, 0, settingsThread, settingsHwnd, 0, &threadIDSettings);
+            return 0;
+        }
+        return 0;
+
+    case WM_KEYDOWN:
+        // Left
+        if ((wParam == 37 || wParam == 65) && direction != 4) direction = 3;
+        // Up
+        else if ((wParam == 38 || wParam == 87) && direction != 2) direction = 1;
+        // Right
+        else if ((wParam == 39 || wParam == 68) && direction != 3) direction = 4;
+        // Down
+        else if ((wParam == 40 || wParam == 83) && direction != 1) direction = 2;
 
     }
     // Does the default action for the message if undefined in the switch
@@ -229,9 +260,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 // WindowProcSettings(windowHandle, message, additionalParameter, additionalParameter)
 LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    switch (uMsg) {
-
+    if (uMsg == WM_COMMAND) {
+        int wmId = HIWORD(wParam);
+        switch (wmId) {
+        case BN_CLICKED:
+            int buttonId = LOWORD(wParam);
+            switch (buttonId) {
+            case BTN_OK:
+                DestroyWindow(hwnd);
+                closeSettings = 1;
+                return 0;
+            }
+        }
     }
+            
     // Does the default action for the message if undefined in the switch
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }

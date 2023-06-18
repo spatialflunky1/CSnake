@@ -9,6 +9,7 @@
 #define ID_QUIT 100
 #define ID_ABOUT 101
 #define ID_SETTINGS 102
+#define BTN_OK 200
 #define WIDTH 653
 #define HEIGHT 485
 
