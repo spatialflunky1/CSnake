@@ -14,6 +14,7 @@
 #define HEIGHT 485
 
 DWORD WINAPI gameLoop(HWND hwnd);
+DWORD WINAPI settingsThread(HWND settingsHwnd);
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
