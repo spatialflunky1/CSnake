@@ -24,6 +24,11 @@ int closeSettings = 0;
 DWORD threadID = 0;
 HANDLE gameThread;
 
+// Colors (r,g,b)
+COLORREF snakeColor = RGB(0,0,0);
+COLORREF appleColor = RGB(255,0,0);
+COLORREF backgroundColor = RGB(255,255,255);
+
 // Pens and brushes
 HBRUSH snakeBrush;
 HBRUSH backgroundBrush;
@@ -140,12 +145,12 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     Background: White
     Apple: Red
     */
-    snakeBrush = CreateSolidBrush(RGB(0,0,0));
-    backgroundBrush = CreateSolidBrush(RGB(255, 255, 255));
-    appleBrush = CreateSolidBrush(RGB(255, 0, 0));
-    snakePen = CreatePen(PS_SOLID, 0, RGB(0, 0, 0));
-    backgroundPen = CreatePen(PS_SOLID, 0, RGB(255, 255, 255));
-    applePen = CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
+    snakeBrush = CreateSolidBrush(snakeColor);
+    backgroundBrush = CreateSolidBrush(backgroundColor);
+    appleBrush = CreateSolidBrush(appleColor);
+    snakePen = CreatePen(PS_SOLID, 0, snakeColor);
+    backgroundPen = CreatePen(PS_SOLID, 0, backgroundColor);
+    applePen = CreatePen(PS_SOLID, 0, appleColor);
 
     while (TRUE) {
         if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
@@ -272,6 +277,13 @@ LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
                 return 0;
             }
         }
+    }
+    else if (uMsg == WM_PAINT) {
+        printString(GetDC(hwnd), 60, 50, L"Snake: ");
+
+        printString(GetDC(hwnd), 60, 100, L"Apple: ");
+
+        printString(GetDC(hwnd), 20, 150, L"Background: ");
     }
             
     // Does the default action for the message if undefined in the switch
