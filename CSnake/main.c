@@ -27,7 +27,7 @@ HANDLE gameThread;
 // Colors (snake,apple,background)
 COLORREF colors[3] = { RGB(0, 0, 0) , RGB(255,0,0) ,RGB(255,255,255)};
 // (sr,ar,br,sg,ag,bg,sb,ab,bb), index: 0-2 = red, 3-5 = blue, 6-8 = green 
-HANDLE settingBoxes[9];
+HWND settingBoxes[9];
 
 // Pens and brushes
 HBRUSH snakeBrush;
