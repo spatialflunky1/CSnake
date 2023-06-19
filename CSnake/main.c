@@ -229,7 +229,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 return 0;
             }
 
-            HWND hwndButton = CreateWindow(
+            CreateWindow(
                 L"BUTTON",  // Predefined class; Unicode assumed 
                 L"OK",      // Button text 
                 WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
