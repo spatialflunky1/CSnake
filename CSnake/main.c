@@ -215,7 +215,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 0,
                 CLASS_NAME_SETTINGS,
                 L"CSnake Settings",
-                WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | SS_ETCHEDHORZ,
                 // Size and Position (xPos, yPos, width, height)
                 CW_USEDEFAULT, CW_USEDEFAULT, 400, 320,
                 hwnd,
@@ -279,11 +279,20 @@ LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
         }
     }
     else if (uMsg == WM_PAINT) {
-        printString(GetDC(hwnd), 60, 50, L"Snake: ");
+        HDC hdc = GetDC(hwnd);
+        printString(hdc, 42, 34, L"Snake: ");
+        printString(hdc, 171, 34, L"Apple: ");
+        printString(hdc, 279, 34, L"Background: ");
+        for (int i = 0; i < 3; i++) {
+            printString(hdc, 10 + (i * 127), 80, L"R: ");
+            printString(hdc, 10 + (i * 127), 140, L"G: ");
+            printString(hdc, 10 + (i * 127), 200, L"B: ");
+        }
 
-        printString(GetDC(hwnd), 60, 100, L"Apple: ");
-
-        printString(GetDC(hwnd), 20, 150, L"Background: ");
+        MoveToEx(hdc, 127, 281, NULL);
+        LineTo(hdc, 127, -1);
+        MoveToEx(hdc, 254, 281, NULL);
+        LineTo(hdc, 254, -1);
     }
             
     // Does the default action for the message if undefined in the switch
