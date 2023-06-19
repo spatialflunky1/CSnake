@@ -12,6 +12,7 @@ struct snake {
 };
 
 void drawRect(HDC hdc, int x, int y, int size, struct snake* snake1);
+wchar_t* intToWchar_t(int num);
 void printNum(HDC hdc, int x, int y, int num);
 void printString(HDC hdc, int x, int y, wchar_t string[]);
 void paintScore(HDC hdc, int score);

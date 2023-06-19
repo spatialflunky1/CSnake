@@ -24,10 +24,8 @@ int closeSettings = 0;
 DWORD threadID = 0;
 HANDLE gameThread;
 
-// Colors (r,g,b)
-COLORREF snakeColor = RGB(0,0,0);
-COLORREF appleColor = RGB(255,0,0);
-COLORREF backgroundColor = RGB(255,255,255);
+// Colors (snake,apple,background)
+COLORREF colors[3] = { RGB(0, 0, 0) , RGB(255,0,0) ,RGB(255,255,255)};
 
 // Pens and brushes
 HBRUSH snakeBrush;
@@ -140,17 +138,13 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     setRandApple(&snake1);
 
     HDC hdc = GetDC(hwnd);
-    /*
-    Snake: Black
-    Background: White
-    Apple: Red
-    */
-    snakeBrush = CreateSolidBrush(snakeColor);
-    backgroundBrush = CreateSolidBrush(backgroundColor);
-    appleBrush = CreateSolidBrush(appleColor);
-    snakePen = CreatePen(PS_SOLID, 0, snakeColor);
-    backgroundPen = CreatePen(PS_SOLID, 0, backgroundColor);
-    applePen = CreatePen(PS_SOLID, 0, appleColor);
+
+    snakeBrush = CreateSolidBrush(colors[0]);
+    appleBrush = CreateSolidBrush(colors[1]);
+    backgroundBrush = CreateSolidBrush(colors[2]);
+    snakePen = CreatePen(PS_SOLID, 0, colors[0]);
+    applePen = CreatePen(PS_SOLID, 0, colors[1]);
+    backgroundPen = CreatePen(PS_SOLID, 0, colors[2]);
 
     while (TRUE) {
         if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
@@ -241,6 +235,18 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 (HMENU)BTN_OK,    // No menu.
                 (HINSTANCE)GetWindowLongPtr(settingsHwnd, GWLP_HINSTANCE),
                 NULL);      // Pointer not needed.
+
+            for (int i = 0; i < 3; i++) {
+                wchar_t* r = intToWchar_t(GetRValue(colors[i]));
+                wchar_t* g = intToWchar_t(GetGValue(colors[i]));
+                wchar_t* b = intToWchar_t(GetBValue(colors[i]));
+                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", r, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 77, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", g, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 137, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", b, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 197, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                free(r);
+                free(g);
+                free(b);
+            }
 
             ShowWindow(settingsHwnd, SW_SHOW);
             sThread = CreateThread(NULL, 0, settingsThread, settingsHwnd, 0, &threadIDSettings);
