@@ -26,6 +26,8 @@ HANDLE gameThread;
 
 // Colors (snake,apple,background)
 COLORREF colors[3] = { RGB(0, 0, 0) , RGB(255,0,0) ,RGB(255,255,255)};
+// (sr,ar,br,sg,ag,bg,sb,ab,bb), index: 0-2 = red, 3-5 = blue, 6-8 = green 
+HANDLE settingBoxes[9];
 
 // Pens and brushes
 HBRUSH snakeBrush;
@@ -240,9 +242,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 wchar_t* r = intToWchar_t(GetRValue(colors[i]));
                 wchar_t* g = intToWchar_t(GetGValue(colors[i]));
                 wchar_t* b = intToWchar_t(GetBValue(colors[i]));
-                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", r, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 77, 70, 20, settingsHwnd, NULL, NULL, NULL);
-                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", g, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 137, 70, 20, settingsHwnd, NULL, NULL, NULL);
-                CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", b, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 197, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                settingBoxes[(i * 3)] = CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", r, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 77, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                settingBoxes[(i * 3) + 1] = CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", g, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 137, 70, 20, settingsHwnd, NULL, NULL, NULL);
+                settingBoxes[(i * 3) + 2] = CreateWindowEx(WS_EX_CLIENTEDGE, L"Edit", b, WS_CHILD | WS_VISIBLE | WS_BORDER, 40 + ((i % 3) * 127), 197, 70, 20, settingsHwnd, NULL, NULL, NULL);
                 free(r);
                 free(g);
                 free(b);
