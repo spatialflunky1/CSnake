@@ -19,6 +19,7 @@ int direction = 0;
 DWORD threadIDSettings = 1;
 HANDLE sThread;
 int closeSettings = 0;
+int repaint = 0;
 
 // Game thread
 DWORD threadID = 0;
@@ -149,6 +150,10 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     backgroundPen = CreatePen(PS_SOLID, 0, colors[2]);
 
     while (TRUE) {
+        if (repaint) {
+            RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
+            repaint = 0;
+        }
         if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
     }
 
@@ -187,7 +192,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     case WM_PAINT:
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        FillRect(hdc, &ps.rcPaint, backgroundBrush);
         Rectangle(hdc, 0, 0, 84, 24);
         printString(hdc, 5, 5, L"Score:");
         EndPaint(hwnd, &ps);
@@ -280,8 +285,31 @@ LRESULT CALLBACK WindowProcSettings(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM 
             int buttonId = LOWORD(wParam);
             switch (buttonId) {
             case BTN_OK:
+                DeleteObject(snakeBrush);
+                DeleteObject(backgroundBrush);
+                DeleteObject(appleBrush);
+                DeleteObject(snakePen);
+                DeleteObject(backgroundPen);
+                DeleteObject(applePen);
+                int output[9];
+                for (int i = 0; i < 9; i++) {
+                    wchar_t temp[4];
+                    GetWindowText(settingBoxes[i], temp, 4);
+                    output[i] = wcstol(temp, NULL, 10);
+                }
+                for (int i = 0; i < 3; i++) {
+                    colors[i] = RGB(output[(i * 3)], output[(i * 3) + 1], output[(i * 3) + 2]);
+                }
+                snakeBrush = CreateSolidBrush(colors[0]);
+                appleBrush = CreateSolidBrush(colors[1]);
+                backgroundBrush = CreateSolidBrush(colors[2]);
+                snakePen = CreatePen(PS_SOLID, 0, colors[0]);
+                applePen = CreatePen(PS_SOLID, 0, colors[1]);
+                backgroundPen = CreatePen(PS_SOLID, 0, colors[2]);
+
                 DestroyWindow(hwnd);
                 closeSettings = 1;
+                repaint = 1;
                 return 0;
             }
         }
