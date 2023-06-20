@@ -152,6 +152,7 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     // Need an unchanging black pen for score border
     blackPen = CreatePen(PS_SOLID, 0, RGB(0,0,0));
 
+    SetBkMode(hdc, TRANSPARENT);
     while (TRUE) {
         if (repaint) {
             RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
