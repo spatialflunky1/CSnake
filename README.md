@@ -8,7 +8,7 @@ C-Snake / CompSci-(s)nake
 Open `CSnake.sln` in Visual Studio and press play (compile & run)
 
 ## Future features:
-- [ ] Preferences menu for changing color
+- [ ] Death by impact of tail
 
 ## Dependencies:
 #### Windows
