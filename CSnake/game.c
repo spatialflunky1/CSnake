@@ -58,7 +58,7 @@ void setRandApple(struct snake *snake1) {
     (*snake1).apple[1] = num;
 }
 
-int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, int direction) {
+int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snakeBrush, HBRUSH appleBrush, HPEN backgroundPen, HPEN snakePen, HPEN applePen, HPEN blackPen, int direction) {
     if ((*snake1).apple[0] == (*snake1).curr[0][0] && (*snake1).apple[1] == (*snake1).curr[0][1]) {
         setRandApple(snake1);
 
@@ -89,6 +89,7 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
     }
 
     SelectObject(hdc, backgroundBrush);
+    SelectObject(hdc, blackPen);
     Rectangle(hdc, 0, 0, 84, 24);
     printString(hdc, 5, 5, L"Score:");
     paintScore(hdc, snakeLength-1);

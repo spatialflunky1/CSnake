@@ -37,6 +37,7 @@ HBRUSH appleBrush;
 HPEN snakePen;
 HPEN backgroundPen;
 HPEN applePen;
+HPEN blackPen;
 
 // wchar_t is used instead of char as the Windows API requires it
 // wchar_t shouldn't be used anywhere else besides the Windows API as it uses more multiple bytes (long char)
@@ -148,13 +149,15 @@ DWORD WINAPI gameLoop(HWND hwnd) {
     snakePen = CreatePen(PS_SOLID, 0, colors[0]);
     applePen = CreatePen(PS_SOLID, 0, colors[1]);
     backgroundPen = CreatePen(PS_SOLID, 0, colors[2]);
+    // Need an unchanging black pen for score border
+    blackPen = CreatePen(PS_SOLID, 0, RGB(0,0,0));
 
     while (TRUE) {
         if (repaint) {
             RedrawWindow(hwnd, NULL, NULL, RDW_INVALIDATE);
             repaint = 0;
         }
-        if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, direction) == -1) break;
+        if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, blackPen, direction) == -1) break;
     }
 
     printString(hdc, 270, 200, L"Game Over!");
@@ -193,6 +196,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
         FillRect(hdc, &ps.rcPaint, backgroundBrush);
+        SelectObject(hdc, blackPen);
         Rectangle(hdc, 0, 0, 84, 24);
         printString(hdc, 5, 5, L"Score:");
         EndPaint(hwnd, &ps);
