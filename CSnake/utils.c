@@ -18,7 +18,9 @@ void paintScore(HDC hdc, int score) {
 wchar_t* intToWchar_t(int num) {
     int len = numDigits(num);
     // Create an empty wide character array of length `len`, if num==0 use 1 for log10 as 0 would make the function undefined
-    wchar_t* temp = num != 0 ? (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16) : (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(1) + 16);
+    wchar_t* temp = num != 0 ? 
+        (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(num) + 16) : 
+        (wchar_t*)malloc(sizeof(wchar_t) * (int)log10(1) + 16);
     // Fix 'temp' may be '0' warning
     if (temp == 0) return;
     // Copy int `num` into wide character array buffer `temp`

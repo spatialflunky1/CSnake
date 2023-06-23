@@ -14,6 +14,7 @@ global variables
 
 // Snake direction
 int direction = 0;
+int snakeLength = 1;
 
 // Settings thread
 DWORD threadIDSettings = 1;
@@ -160,6 +161,11 @@ DWORD WINAPI gameLoop(HWND hwnd) {
         }
         if (snakeMove(hdc, &snake1, backgroundBrush, snakeBrush, appleBrush, backgroundPen, snakePen, applePen, blackPen, direction) == -1) break;
     }
+
+    for (int i = 0; i < snakeLength; i++) {
+        free(snake1.curr[i]);
+    }
+    free(snake1.curr);
 
     printString(hdc, 270, 200, L"Game Over!");
 

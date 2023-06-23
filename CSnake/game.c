@@ -2,7 +2,7 @@
 #include "utils.h"
 #include "game.h"
 
-int snakeLength = 1;
+extern int snakeLength;
 
 int changePos(struct snake* snake1, int direction, int index) {
     // Sets every other value to the previous value
