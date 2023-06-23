@@ -83,6 +83,7 @@ int snakeMove(HDC hdc, struct snake* snake1, HBRUSH backgroundBrush, HBRUSH snak
     }
     // Redraw all rects
     for (int i = snakeLength-1; i >= 0; i--) {
+        if (i != 0 && (*snake1).curr[i][0] == (*snake1).curr[0][0] && (*snake1).curr[i][1] == (*snake1).curr[0][1]) return -1;
         (*snake1).brush = snakeBrush;
         (*snake1).pen = snakePen;
         drawRect(hdc, (*snake1).curr[i][0], (*snake1).curr[i][1], 6, snake1);
