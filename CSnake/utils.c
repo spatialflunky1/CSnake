@@ -72,11 +72,13 @@ int** append(int** array, int rows, int* val) {
         for (int j = 0; j < 2; j++) {
             if (i < rows) {
                 temp[i][j] = array[i][j];
+                if (j == 1) free(array[i]);
             }
             else {
                 temp[i][j] = val[j];
             }
         }
     }
+    free(array);
     return temp;
 }
